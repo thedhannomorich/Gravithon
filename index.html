@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
+<title>Gravithon</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+/* Animations */<link rel="icon" type="image/png" href="logo.png">
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.98);}
+  100% { opacity: 1; transform: scale(1);}
+}
+@keyframes gradientMove {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1);}
+  50% { transform: scale(1.05);}
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important;}
+}
+:root {
+  --primary-color: #e3e5e8;
+  --secondary-color: #959699;
+  --dark-bg: #17181a;
+  --dark-card: #222326;
+  --dark-text-color: #dde1e5;
+  --bangla-font: 'Hind Siliguri', sans-serif;
+  --english-font: 'Poppins', sans-serif;
+  --border-radius: 0.5rem;
+  --min-touch-size: 44px;
+
+  /* Flat, muted gradients */
+  --accent-gradient: linear-gradient(90deg, #3f7e5e 0%, #355c4b 100%);
+  --success-gradient: linear-gradient(90deg, #476e5d 0%, #2c5b4e 100%);
+  --error-gradient: linear-gradient(90deg, #884b4b 0%, #5c3030 100%);
+  --warning-gradient: linear-gradient(90deg, #b8895c 0%, #8c7050 100%);
+  --option-gradient: linear-gradient(120deg, #486a7a 0%, #35546b 100%);
+  --secondary-gradient: linear-gradient(90deg, #26272a 0%, #29292e 100%);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box;}
+body {
+  font-family: var(--bangla-font);
+  margin: 0;
+  background: var(--dark-bg);
+  color: var(--dark-text-color);
+  line-height: 1.5;
+  font-size: 0.97rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: text;
+  touch-action: manipulation;
+}
+h1 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 0.85rem;
+  font-family: var(--english-font);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-size: 1.7rem;
+}
+h2, h3 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 1.1rem;
+  border-bottom: 2px solid #3f7e5e;
+  padding-bottom: 0.45rem;
+  font-weight: 700;
+  font-size: 1.18rem;
+}
+
+/* Containers */
+.container,
+.question,
+.subject-card,
+.modal-content,
+.stat-item,
+.instructions,
+.history-preview,
+.analysis-container {
+  background: var(--dark-card);
+  color: var(--dark-text-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 0.15rem 0.65rem rgba(0,0,0,0.22);
+  animation: fadeIn 0.4s ease;
+  animation-fill-mode: both;
+  padding: 1.1rem;
+}
+.container { max-width: 54rem; margin: 1rem auto; padding: 1.1rem;}
+
+/* Inputs */
+input[type="text"], input[type="number"], select {
+  width: 100%;
+  padding: 0.6rem;
+  background: #23262a;
+  border: 1px solid #34353a;
+  border-radius: var(--border-radius);
+  color: var(--dark-text-color);
+  font-size: 0.96rem;
+  font-family: var(--bangla-font);
+  outline-offset: 2px;
+  transition: border-color 0.2s ease, background 0.2s, color 0.2s;
+  min-height: var(--min-touch-size);
+}
+input[type="text"]:invalid, input[type="number"]:invalid { border-color: #884b4b;}
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+  border-color: #3f7e5e;
+  outline: 2px solid #3f7e5e;
+}
+label { font-weight: 700; margin-bottom: 0.35rem; display: block; font-size: 0.97rem; }
+
+/* Buttons - Flat Gradients & Animation */
+.btn,
+.option-btn,
+.theme-toggle {
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, background 0.4s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-width: var(--min-touch-size);
+  min-height: var(--min-touch-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.62rem 1rem;
+  font-size: 0.96rem;
+  color: #e3e5e8;
+  background: var(--accent-gradient);
+  background-size: 200% 200%;
+  animation: gradientMove 5s linear infinite;
+  box-shadow: 0 2px 8px #3f7e5e22;
+}
+.btn:hover:not(:disabled),
+.option-btn:hover:not(:disabled),
+.theme-toggle:hover:not(:disabled) {
+  transform: translateY(-1.5px) scale(1.04);
+  box-shadow: 0 0.3rem 1rem #3f7e5e33;
+}
+.btn:active:not(:disabled),
+.option-btn:active:not(:disabled),
+.theme-toggle:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  animation: pulse 0.18s;
+}
+.btn:disabled { opacity: 0.7; cursor: not-allowed; }
+/* Button variants - gradients */
+.btn-secondary {
+  background: var(--secondary-gradient);
+  color: #e3e5e8;
+  background-size: 200% 200%;
+  animation: gradientMove 6s linear infinite;
+}
+.btn-success {
+  background: var(--success-gradient);
+  color: #dde1e5;
+  background-size: 200% 200%;
+  animation: gradientMove 4s linear infinite;
+}
+.btn-danger {
+  background: var(--error-gradient);
+  color: #e3e5e8;
+  background-size: 200% 200%;
+  animation: gradientMove 4s linear infinite;
+}
+.btn-warning {
+  background: var(--warning-gradient);
+  color: #e3e5e8;
+  background-size: 200% 200%;
+  animation: gradientMove 4s linear infinite;
+}
+
+/* Timer */
+#timer {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin: 0 auto 1rem auto;
+  background: #23262a;
+  color: var(--primary-color);
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--border-radius);
+  font-weight: 700;
+  font-size: 0.97rem;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  text-align: center;
+}
+
+#timer.warning {
+  color: #b8895c;
+  animation: pulse 1s infinite;
+}
+#timer.critical {
+  color: #884b4b;
+  animation: pulse 0.5s infinite;
+}
+
+/* Question grid */
+#questionContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 1.1rem 0;
+}
+.question {
+  border: 1px solid #23262a;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 10rem;
+  font-size: 0.97rem;
+  user-select: none;
+  transition: transform 0.18s;
+  background: var(--dark-card);
+  color: var(--dark-text-color);
+  animation: fadeIn 0.4s;
+}
+.question-number {
+  color: #3f7e5e;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.options-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: auto;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.option-btn {
+  background: #111 !important;
+  color: #fff !important;
+  border: 2px solid #34353a;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.18s;
+  box-shadow: none;
+  background-image: none !important;
+}
+
+.option-btn.selected {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #555;
+  box-shadow: none;
+  transform: scale(1.08);
+  background-image: none !important;
+}
+.question.mistake {
+  border: 2px solid #884b4b;
+  background: var(--error-gradient);
+  background-size: 200% 200%;
+  background-blend-mode: lighten;
+  color: #e3e5e8;
+  animation: gradientMove 2s linear infinite, fadeIn 0.5s;
+}
+.question.correct {
+  border: 2px solid #476e5d;
+  background: var(--success-gradient);
+  background-size: 200% 200%;
+  background-blend-mode: lighten;
+  color: #e3e5e8;
+  animation: gradientMove 2s linear infinite, fadeIn 0.5s;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.1rem 0;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 19, 21, 0.82);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 0.7rem;
+  backdrop-filter: blur(4px);
+}
+.modal-content {
+  max-width: min(94vw, 32rem);
+  width: 100%;
+  padding: 1.1rem;
+  text-align: center;
+  animation: scaleIn 0.22s;
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.modal-close {
+  position: absolute;
+  top: 0.4rem; right: 0.4rem;
+  background: transparent;
+  border: none;
+  font-size: 1.35rem;
+  cursor: pointer;
+  color: var(--secondary-color);
+  width: 2rem; height: 2rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-buttons {
+  display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.1rem; flex-wrap: wrap;
+}
+
+.progress-container {
+  background: #23262a;
+  border-radius: var(--border-radius);
+  margin: 1.1rem 0;
+  height: 1.2rem;
+  overflow: hidden;
+  position: sticky;
+  top: 52px;
+  z-index: 103;
+}
+
+/* Progress Bar Fill */
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-gradient);
+  background-size: 200% 200%;
+  animation: gradientMove 4s linear infinite;
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-size: 0.8rem;
+  color: #222326;
+  font-weight: bold;
+  transition: width 0.3s;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  margin: 1.1rem 0;
+}
+.stat-item { text-align: center; padding: 0.8rem;}
+.stat-value {
+  font-size: 1.15rem;
+  background: var(--accent-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin: 0.4rem 0;
+  animation: gradientMove 7s linear infinite;
+}
+
+/* Subject grid */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1rem;
+  margin: 1.3rem 0;
+}
+.subject-card {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1rem 0.7rem;
+  cursor: pointer; min-height: 7.5rem;
+  transition: transform 0.16s, box-shadow 0.16s;
+  position: relative; overflow: hidden;
+  background: var(--dark-card);
+  color: var(--dark-text-color);
+}
+.subject-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--accent-gradient);
+  background-size: 200% 200%;
+  animation: gradientMove 3s linear infinite;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s;
+}
+.subject-card:hover::after,
+.subject-card:focus-visible::after {
+  transform: scaleX(1);
+}
+.subject-card:hover,
+.subject-card:focus-visible {
+  transform: translateY(-0.18rem) scale(1.035);
+  box-shadow: 0 0.4rem 1rem #3f7e5e33;
+  outline: none;
+}
+.subject-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.subject-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  text-align: center;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Filter controls */
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.filter-controls select, .filter-controls input { width: 100%; min-width: auto; }
+
+/* Theme toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 1.1rem;
+  right: 1.1rem;
+  background: var(--accent-gradient);
+  background-size: 200% 200%;
+  color: #e3e5e8;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  box-shadow: 0 0.2rem 0.66rem #3f7e5e33;
+  z-index: 100;
+  border: none;
+  animation: gradientMove 3s linear infinite;
+}
+
+/* Instructions */
+.instructions ul { padding-left: 1rem; font-size: 0.96rem; line-height: 1.6;}
+.instructions li { margin-bottom: 0.4rem; }
+
+/* History preview */
+.history-scroll {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.6rem 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #3f7e5e var(--dark-card);
+}
+.history-scroll::-webkit-scrollbar { height: 5px;}
+.history-scroll::-webkit-scrollbar-track { background: var(--dark-card);}
+.history-scroll::-webkit-scrollbar-thumb {
+  background: #3f7e5e;
+  border-radius: 3px;
+}
+.history-item {
+  min-width: 10rem;
+  background: #26272a;
+  border-radius: var(--border-radius);
+  padding: 0.7rem;
+  flex-shrink: 0;
+  transition: transform 0.18s;
+  background: var(--option-gradient);
+  background-size: 200% 200%;
+  animation: gradientMove 8s linear infinite;
+  color: #dde1e5;
+}
+.history-item:hover { transform: translateY(-2px); }
+
+/* Analysis container */
+.analysis-container { margin: 2rem 0; }
+
+/* Chart styles */
+.chart-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 18rem;
+  padding: 1.5rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+.bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;More actions
+  margin: 0 0.5rem;
+  height: 100%;
+  min-width: 3rem;
+}
+.bar {
+  width: 2rem;
+  margin: 0 auto;
+  position: relative;
+  transition: height 0.5s;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: var(--subject-color); /* We'll add this variable */
+  transition: height 0.5s ease;
+}
+.chart-label {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Time filter buttons */
+.time-filter {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+  justify-content: center;
+}
+.time-filter button {
+  background: var(--secondary-gradient);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.62rem 1rem;
+  color: #e3e5e8;
+  cursor: pointer;
+  transition: all 0.18s;
+  min-width: 4.2rem;
+  background-size: 200% 200%;
+  animation: gradientMove 7s linear infinite;
+}
+.time-filter button.active {
+  background: var(--accent-gradient);
+  color: #222326;
+  font-weight: bold;
+  animation: gradientMove 2.5s linear infinite;
+}
+
+/* Form validation */
+.error-message {
+  color: #884b4b;
+  font-size: 0.78rem;
+  margin-top: 0.18rem;
+  display: none;
+}
+.input-error { border-color: #884b4b !important; }
+
+/* Footer */
+footer {
+  background: var(--dark-card);
+  color: var(--dark-text-color);
+  text-align: center;
+  padding: 1.1rem 0.7rem;
+  margin-top: 1.3rem;
+  border-top: 1px solid #23262a;
+}
+.footer-email {
+  background: var(--accent-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.18s;
+  animation: gradientMove 6s linear infinite;
+}
+.footer-email:hover {
+  background: linear-gradient(90deg, #3f7e5e 0%, #355c4b 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 0.7rem; margin: 0.5rem;}
+  #questionContainer { grid-template-columns: 1fr;}
+  .option-btn { width: 2.1rem; height: 2.1rem; font-size: 0.97rem;}
+  .subject-grid { grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));}
+  .filter-controls { grid-template-columns: 1fr;}
+  .modal-content { padding: 1rem 0.7rem;}
+}
+@media (max-width: 480px) {
+  .btn, .option-btn { padding: 0.6rem; font-size: 0.89rem;}
+  .subject-card { min-height: 6.2rem; padding: 0.7rem 0.5rem;}
+  .history-item { min-width: 8.2rem;}
+  footer { font-size: 0.79rem; padding: 0.7rem 0.5rem;}
+}
+
+/* Keyboard navigation focus */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3f7e5e;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .container { background: white; color: black; box-shadow: none;}
+  .no-print { display: none !important;}
+}
+
+/* Light theme variables */
+body:not(.dark-mode) {
+  --primary-color: #232529;
+  --secondary-color: #7e7f85;
+  --dark-bg: #f7f8fa;
+  --dark-card: #f1f2f4;
+  --dark-text-color: #232529;
+  --accent-gradient: linear-gradient(90deg, #7cc6a8 0%, #5a8476 100%);
+  --success-gradient: linear-gradient(90deg, #7bbca0 0%, #628c80 100%);
+  --error-gradient: linear-gradient(90deg, #b17e7e 0%, #a05b5b 100%);
+  --warning-gradient: linear-gradient(90deg, #cab389 0%, #a28d72 100%);
+  --option-gradient: linear-gradient(120deg, #8fa8b7 0%, #6a7b8a 100%);
+  --secondary-gradient: linear-gradient(90deg, #e6e6e8 0%, #e1e1e4 100%);
+}
+/* Light theme overrides */
+body:not(.dark-mode) {
+  background: var(--dark-bg);
+  color: var(--dark-text-color);
+}
+body:not(.dark-mode) .container,
+body:not(.dark-mode) .question,
+body:not(.dark-mode) .subject-card,
+body:not(.dark-mode) .modal-content,
+body:not(.dark-mode) .stat-item,
+body:not(.dark-mode) .instructions,
+body:not(.dark-mode) .history-preview,
+body:not(.dark-mode) .analysis-container {
+  background: var(--dark-card);
+  color: var(--dark-text-color);
+  box-shadow: 0 0.15rem 0.7rem rgba(0,0,0,0.04);
+}
+body:not(.dark-mode) .btn,
+body:not(.dark-mode) .theme-toggle {
+  background: var(--accent-gradient);
+  color: #232529;
+}
+body:not(.dark-mode) .btn-secondary {
+  background: var(--secondary-gradient);
+  color: #555;
+}
+body:not(.dark-mode) .btn-success {
+  background: var(--success-gradient);
+  color: #232529;
+}
+body:not(.dark-mode) .btn-danger {
+  background: var(--error-gradient);
+  color: #232529;
+}
+body:not(.dark-mode) .btn-warning {
+  background: var(--warning-gradient);
+  color: #232529;
+}
+body:not(.dark-mode) .progress-container {
+  background: #e1e1e4;
+}
+body:not(.dark-mode) .progress-bar {
+  background: var(--accent-gradient);
+  color: #232529;
+}
+body:not(.dark-mode) .question {
+  border: 1px solid #e1e1e4;
+}
+body:not(.dark-mode) .option-btn {
+  background: var(--option-gradient) !important;
+  color: #232529 !important;
+  border: 2px solid #d2d6da;
+  background-image: var(--option-gradient) !important;
+}
+body:not(.dark-mode) .option-btn.selected {
+  background: var(--accent-gradient) !important;
+  color: #f1f2f4 !important;
+  border-color: #7cc6a8;
+  background-image: var(--accent-gradient) !important;
+}
+body:not(.dark-mode) input[type="text"],
+body:not(.dark-mode) input[type="number"],
+body:not(.dark-mode) select {
+  background: #fff;
+  color: #232529;
+  border: 1px solid #c8cbd1;
+}
+body:not(.dark-mode) input[type="text"]:focus,
+body:not(.dark-mode) input[type="number"]:focus,
+body:not(.dark-mode) select:focus {
+  border-color: #7cc6a8;
+  outline: 2px solid #7cc6a8;
+}
+body:not(.dark-mode) label {
+  color: #232529;
+}
+body:not(.dark-mode) #timer {
+  background: #e3ede8;
+  color: #232529;
+  box-shadow: 0 2px 10px #a1b8b033;
+}
+body:not(.dark-mode) #timer.warning {
+  color: #cab389;
+}
+body:not(.dark-mode) #timer.critical {
+  color: #b17e7e;
+}
+body:not(.dark-mode) .question.mistake {
+  border: 2px solid #b17e7e;
+  background: var(--error-gradient);
+  color: #fff;
+}
+body:not(.dark-mode) .question.correct {
+  border: 2px solid #7bbca0;
+  background: var(--success-gradient);
+  color: #fff;
+}
+body:not(.dark-mode) .modal {
+  background: rgba(240, 240, 240, 0.93);
+  backdrop-filter: blur(3px);
+}
+body:not(.dark-mode) .modal-content {
+  background: #f1f2f4;
+  color: #232529;
+}
+body:not(.dark-mode) footer {
+  background: #f1f2f4;
+  color: #7e7f85;
+  border-top: 1px solid #e1e1e4;
+}
+body:not(.dark-mode) .footer-email {
+  background: var(--accent-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+body:not(.dark-mode) .footer-email:hover {
+  background: linear-gradient(90deg, #7cc6a8 0%, #5a8476 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+body:not(.dark-mode) .history-scroll { background: #f7f8fa;}
+body:not(.dark-mode) .history-item {
+  background: var(--option-gradient);
+  color: #fff;
+  border: 1px solid #e0e0e0;
+}
+
+/* Theme toggle button */
+.theme-toggle { transition: background 0.18s, color 0.18s;}
+</style>
+<body>
+
+<div class="container">
+  <div id="homeScreen" class="home-container">
+    <!-- Add this logo div -->
+    <div style="text-align: center; margin-bottom: 10px;">
+      <img src="logo.png" alt="Gravithon Logo" style="height: 60px; width: auto;">
+    </div>
+    
+    <h1 align="center">Gravithon - Topper's Secret</h1>
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+      <button class="btn btn-secondary" onclick="toggleTheme()" style="border-radius: 5px; padding: 8px 16px;">🌓 Change Mode</button>
+      <button class="btn btn-secondary" onclick="showHelpModal()" style="border-radius: 5px; padding: 8px 16px;">❓ Help</button>
+    </div>
+    
+    <h3>Subjects</h3>
+    <div class="subject-grid">
+      <div class="subject-card" tabindex="0" data-subject="English 1st Paper" onclick="selectSubject('English 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'English 1st Paper')">
+        <div class="subject-icon">📘</div>
+        <h3>English 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="English 2nd Paper" onclick="selectSubject('English 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'English 2nd Paper')">
+        <div class="subject-icon">📗</div>
+        <h3>English 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Bengali 1st Paper" onclick="selectSubject('Bengali 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'Bengali 1st Paper')">
+        <div class="subject-icon">📕</div>
+        <h3>Bengali 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Bengali 2nd Paper" onclick="selectSubject('Bengali 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'Bengali 2nd Paper')">
+        <div class="subject-icon">📙</div>
+        <h3>Bengali 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Mathematics 1st Paper" onclick="selectSubject('Mathematics 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'Mathematics 1st Paper')">
+        <div class="subject-icon">🧮</div>
+        <h3>Mathematics 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Mathematics 2nd Paper" onclick="selectSubject('Mathematics 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'Mathematics 2nd Paper')">
+        <div class="subject-icon">📐</div>
+        <h3>Mathematics 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Physics 1st Paper" onclick="selectSubject('Physics 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'Physics 1st Paper')">
+        <div class="subject-icon">⚛️</div>
+        <h3>Physics 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Physics 2nd Paper" onclick="selectSubject('Physics 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'Physics 2nd Paper')">
+        <div class="subject-icon">🔭</div>
+        <h3>Physics 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Biology 1st Paper" onclick="selectSubject('Biology 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'Biology 1st Paper')">
+        <div class="subject-icon">🧬</div>
+        <h3>Biology 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Biology 2nd Paper" onclick="selectSubject('Biology 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'Biology 2nd Paper')">
+        <div class="subject-icon">🌿</div>
+        <h3>Biology 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Chemistry 1st Paper" onclick="selectSubject('Chemistry 1st Paper')" onkeydown="handleSubjectKeyDown(event, 'Chemistry 1st Paper')">
+        <div class="subject-icon">🧪</div>
+        <h3>Chemistry 1st Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Chemistry 2nd Paper" onclick="selectSubject('Chemistry 2nd Paper')" onkeydown="handleSubjectKeyDown(event, 'Chemistry 2nd Paper')">
+        <div class="subject-icon">⚗️</div>
+        <h3>Chemistry 2nd Paper</h3>
+      </div>
+      <div class="subject-card" tabindex="0" data-subject="Information and Communication Technology" onclick="selectSubject('Information and Communication Technology')" onkeydown="handleSubjectKeyDown(event, 'Information and Communication Technology')">
+        <div class="subject-icon">💻</div>
+        <h3>ICT</h3>
+      </div>
+    </div>
+    
+    <div class="history-preview">
+      <h3>History</h3>
+      <div class="history-scroll" id="historyScroll">
+        <!-- History items will be added here dynamically -->
+      </div>
+      <button class="btn" onclick="showHistory()" style="margin-top: 15px;">View All History</button>
+    </div>
+    
+    <div class="analysis-container">
+      <h3>Performance Analysis (Subject Based)</h3>
+      <div class="time-filter">
+        <button class="active" onclick="filterAnalysis('all')">All Time</button>
+        <button onclick="filterAnalysis('year')">Yearly</button>
+        <button onclick="filterAnalysis('month')">Monthly</button>
+        <button onclick="filterAnalysis('week')">Weekly</button>
+      </div>
+      <div class="chart-container" id="chartContainer">
+        <!-- Chart will be rendered here -->
+      </div>
+    </div>
+  </div>
+  
+  <div id="setupForm" style="display: none;">
+    <button class="btn btn-secondary back-btn" onclick="goBackToHome()">← Back</button>
+    <h1>Gravithon - <span id="subjectTitle"></span></h1>
+    
+    <div class="form-group">
+      <label for="testTitle">Test Title:</label>
+      <input type="text" id="testTitle" placeholder="Enter test title" />
+    </div>
+    
+    <div class="form-group">
+      <label for="startNum">Start Serial:</label>
+      <input type="number" id="startNum" min="1" />
+    </div>
+    
+    <div class="form-group">
+      <label for="endNum">End Serial:</label>
+      <input type="number" id="endNum" min="1" />
+    </div>
+    
+    <div class="form-group">
+      <label for="timePerQuestion">Time per Question (seconds):</label>
+      <input type="number" id="timePerQuestion" min="10" value="60" />
+    </div>
+    <div class="form-group">
+      <label for="optionStyle">Option Style:</label>
+      <select id="optionStyle">
+        <option value="bengali">ক, খ, গ, ঘ, ঙ, চ (Bengali Alphabetic)</option>
+        <option value="en-lower">a, b, c, d, e, f (English lower)</option>
+        <option value="en-upper">A, B, C, D, E, F (English upper)</option>
+        <option value="roman-lower">i, ii, iii, iv, v, vi (Roman lower)</option>
+        <option value="roman-upper">I, II, III, IV, V, VI (Roman upper)</option>
+        <option value="numeric">1, 2, 3, 4, 5, 6 (Numeric)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="optionCount">Number of Options per Question:</label>
+      <select id="optionCount">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="startTest()">Start Test</button>
+      <button class="btn btn-secondary" onclick="showHistory()">View History</button>
+    </div>
+  </div>
+
+  <div id="timer" style="display: none;"></div>
+  
+  <div id="progressContainer" class="progress-container" style="display: none;">
+    <div id="progressBar" class="progress-bar"></div>
+  </div>
+
+  <div id="questionContainer"></div>
+
+  <div class="controls" id="testControls" style="display: none;">
+    <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+    <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+    <button class="btn btn-secondary" onclick="saveForLater()">Save for Later</button>
+  </div>
+  
+  <div id="resultStats" style="display: none;">
+    <div class="stats">
+      <div class="stat-item">
+        <div>Total Questions</div>
+        <div class="stat-value" id="totalQuestions">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Correct Answers</div>
+        <div class="stat-value" id="correctAnswers">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Score</div>
+        <div class="stat-value" id="scorePercentage">0%</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="goBackToHome()">Back to Home</button>
+      <button class="btn btn-secondary" onclick="showHistory()">View History</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for various purposes -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent">
+    <!-- content dynamically added -->
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal" id="historyModal">
+  <div class="modal-content">
+    <h3>Test History - <span id="historySubjectTitle"></span></h3>
+    <div class="filter-controls">
+      <select id="filterSubject" onchange="filterHistory()">
+        <option value="all">All Subjects</option>
+        <option value="English 1st Paper">English 1st Paper</option>
+        <option value="English 2nd Paper">English 2nd Paper</option>
+        <option value="Bengali 1st Paper">Bengali 1st Paper</option>
+        <option value="Bengali 2nd Paper">Bengali 2nd Paper</option>
+        <option value="Mathematics 1st Paper">Mathematics 1st Paper</option>
+        <option value="Mathematics 2nd Paper">Mathematics 2nd Paper</option>
+        <option value="Physics 1st Paper">Physics 1st Paper</option>
+        <option value="Physics 2nd Paper">Physics 2nd Paper</option>
+        <option value="Biology 1st Paper">Biology 1st Paper</option>
+        <option value="Biology 2nd Paper">Biology 2nd Paper</option>
+        <option value="Chemistry 1st Paper">Chemistry 1st Paper</option>
+        <option value="Chemistry 2nd Paper">Chemistry 2nd Paper</option>
+        <option value="Information and Communication Technology">ICT</option>
+      </select>
+      <select id="filterStatus" onchange="filterHistory()">
+        <option value="all">All Status</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+      </select>
+      <select id="filterSort" onchange="filterHistory()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="highest">Highest Score</option>
+        <option value="lowest">Lowest Score</option>
+      </select>
+      <input type="text" id="searchTitle" placeholder="Search by title" oninput="filterHistory()">
+    </div>
+    <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
+    <div class="modal-buttons">
+      <button class="btn" onclick="closeHistoryModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  Developed by <span class="footer-name"><a href="https://mail.google.com/mail/u/0/?fs=1&to=thedhannomorich@gmail.com&tf=cm">thedhannomorich</a></span>.
+  Support the developer by sending feedback at this email: 
+  <span class="footer-email" id="copyEmail">thedhannomorich@gmail.com</span>
+</footer>
+<script>
+// Application state
+const state = {
+  answers: {},
+  correctAnswers: {},
+  totalQuestions: 0,
+  timer: null,
+  timeLeft: 0,
+  testTitle: '',
+  testSubject: '',
+  testStarted: false,
+  currentQuestionSet: [],
+  optionStyle: 'bengali',
+  optionCount: 4,
+  phase: 'answering' // Track whether in answering or correct answer phase
+};
+
+// DOM elements
+const elements = {
+  homeScreen: document.getElementById('homeScreen'),
+  setupForm: document.getElementById('setupForm'),
+  subjectTitle: document.getElementById('subjectTitle'),
+  timer: document.getElementById('timer'),
+  questionContainer: document.getElementById('questionContainer'),
+  testControls: document.getElementById('testControls'),
+  resultStats: document.getElementById('resultStats'),
+  progressContainer: document.getElementById('progressContainer'),
+  progressBar: document.getElementById('progressBar'),
+  historySubjectTitle: document.getElementById('historySubjectTitle'),
+  historyScroll: document.getElementById('historyScroll'),
+  chartContainer: document.getElementById('chartContainer')
+};
+
+// Save unfinished test to history before unload
+window.addEventListener('beforeunload', function (e) {
+  if (
+    state.testStarted ||
+    (elements.questionContainer && elements.questionContainer.innerHTML.includes('Correct Answer for Question'))
+  ) {
+    // Save current state as pending before leaving
+    saveToHistory(
+      'pending',
+      state.answers,
+      state.correctAnswers,
+      state.totalQuestions,
+      null,
+      state.timeLeft,
+      { ...state },
+      state.phase
+    );
+    localStorage.removeItem('currentTestData');
+    // Remind user, but do not offer resume modal
+    const confirmationMessage = 'You have an unfinished test. Are you sure you want to leave? Changes might not save.';
+    (e || window.event).returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+});
+
+// Option label generator utility
+function getOptionLabels(style, count) {
+  const sets = {
+    bengali: ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 'চ'],
+    'en-lower': ['a', 'b', 'c', 'd', 'e', 'f'],
+    'en-upper': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'roman-lower': ['i', 'ii', 'iii', 'iv', 'v', 'vi'],
+    'roman-upper': ['I', 'II', 'III', 'IV', 'V', 'VI'],
+    numeric: ['1', '2', '3', '4', '5', '6']
+  };
+  return sets[style] ? sets[style].slice(0, count) : sets['bengali'].slice(0, count);
+}
+
+// Keyboard accessible subject selection
+function handleSubjectKeyDown(event, subject) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    selectSubject(subject);
+  }
+}
+
+// Subject color mapping
+function getSubjectColor(subject) {
+  const colors = {
+    'English 1st Paper': '#3498db',
+    'English 2nd Paper': '#2980b9',
+    'Bengali 1st Paper': '#e74c3c',
+    'Bengali 2nd Paper': '#c0392b',
+    'Mathematics 1st Paper': '#2ecc71',
+    'Mathematics 2nd Paper': '#27ae60',
+    'Physics 1st Paper': '#9b59b6',
+    'Physics 2nd Paper': '#8e44ad',
+    'Biology 1st Paper': '#1abc9c',
+    'Biology 2nd Paper': '#16a085',
+    'Chemistry 1st Paper': '#e67e22',
+    'Chemistry 2nd Paper': '#d35400',
+    'Information and Communication Technology': '#f1c40f'
+  };
+  return colors[subject] || '#95a5a6';
+}
+
+// Helper: Scroll to top for user focus
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Utility to show are you sure modal for sensitive actions
+function showAreYouSureModal(message, onYes, onNo) {
+  showModal(
+    message,
+    () => { if (typeof onYes === 'function') onYes(); },
+    () => { if (typeof onNo === 'function') onNo(); }
+  );
+}
+
+// Initialize the app
+function init() {
+  // On reload, simply remind if unfinished test exists (no more resume prompt)
+  const unfinishedTest = localStorage.getItem('currentTestData');
+  if (unfinishedTest) {
+    showModal(
+      'You have an unfinished test. It has been saved in the History Section.',
+      null,
+      null
+    );
+    localStorage.removeItem('currentTestData');
+    loadRecentHistory();
+  } else {
+    loadRecentHistory();
+  }
+
+  renderSubjectAnalysis();
+  startHistoryScroll();
+
+  // Initialize dark mode if previously set
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    if (document.getElementById('themeToggle')) {
+      document.getElementById('themeToggle').textContent = '🌞';
+    }
+  } else {
+    if (document.getElementById('themeToggle')) {
+      document.getElementById('themeToggle').textContent = '🌓';
+    }
+  }
+
+  // Initialize email copy functionality
+  document.getElementById('copyEmail')?.addEventListener('click', function () {
+    const email = this.textContent;
+    navigator.clipboard.writeText(email).then(() => {
+      const originalText = this.textContent;
+      this.textContent = 'Copied!';
+      setTimeout(() => (this.textContent = originalText), 1500);
+    }).catch(() => {
+      alert('Failed to copy email. Please copy manually.');
+    });
+  });
+}
+
+function continueTest() {
+  scrollToTop();
+  elements.homeScreen.style.display = 'none';
+  elements.setupForm.style.display = 'none';
+  elements.resultStats.style.display = 'none';
+  elements.testControls.style.display = 'flex';
+  elements.progressContainer.style.display = 'block';
+  elements.timer.style.display = state.phase === 'answering' ? 'block' : 'none';
+  elements.questionContainer.innerHTML = '';
+
+  const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+
+  if (state.phase === 'providing-correct') {
+    state.currentQuestionSet.forEach(qNum => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.id = `q-${qNum}`;
+      div.innerHTML = `
+            <div class="question-number">Correct Answer for Question ${qNum}</div>
+            <div class="options-container">
+              ${optionLabels.map(opt =>
+                `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+              ).join('')}
+            </div>
+          `;
+      elements.questionContainer.appendChild(div);
+    });
+    elements.testControls.innerHTML = `
+        <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+        <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+        <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
+      `;
+    elements.progressContainer.style.display = 'none';
+    elements.timer.style.display = 'none';
+    state.testStarted = false;
+  } else {
+    state.currentQuestionSet.forEach(qNum => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.id = `q-${qNum}`;
+      div.innerHTML = `
+            <div class="question-number">Question ${qNum}</div>
+            <div class="options-container">
+              ${optionLabels.map(opt =>
+                `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+              ).join('')}
+            </div>
+          `;
+      elements.questionContainer.appendChild(div);
+    });
+    elements.testControls.innerHTML = `
+        <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+        <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+        <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+      `;
+    updateProgress();
+    clearInterval(state.timer);
+    updateTimer();
+    state.timer = setInterval(updateTimer, 1000);
+    state.testStarted = true;
+  }
+}
+
+function startHistoryScroll() {
+  if (!elements.historyScroll) return;
+  let scrollPosition = 0;
+  function doScroll() {
+    if (!elements.historyScroll) return;
+    scrollPosition += 1;
+    if (scrollPosition > elements.historyScroll.scrollWidth - elements.historyScroll.clientWidth) {
+      scrollPosition = 0;
+      setTimeout(() => {
+        elements.historyScroll.scrollTo({ left: 0, behavior: 'instant' });
+      }, 1000);
+    }
+    elements.historyScroll.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+  }
+  setInterval(doScroll, 50);
+}
+
+function loadRecentHistory() {
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  } catch {
+    history = [];
+    localStorage.removeItem('omrHistory');
+  }
+  history = history.slice(0, 5);
+  elements.historyScroll.innerHTML = '';
+  if (history.length === 0) {
+    elements.historyScroll.innerHTML = '<p>No recent tests found.</p>';
+    return;
+  }
+  history.forEach(test => {
+    const testDiv = document.createElement('div');
+    testDiv.className = 'history-item';
+    testDiv.innerHTML = `
+      <h4>${test.title}</h4>
+      <p>${test.subject ?? ''}</p>
+      <p>${test.date ?? ''}</p>
+      ${test.score !== null && typeof test.score !== 'undefined' ? `<p><strong>Score:</strong> ${test.score}%</p>` : '<p>Pending</p>'}
+      <button class="btn btn-danger btn-xs" style="margin-top: 6px;position:relative;z-index:10;" onclick="event.stopPropagation(); confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
+    `;
+    testDiv.addEventListener('click', () => viewTestDetails(test));
+    elements.historyScroll.appendChild(testDiv);
+  });
+}
+
+function renderSubjectAnalysis(filter = 'all') {
+  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  const now = new Date();
+  if (filter === 'year') {
+    history = history.filter(test => {
+      const testDate = new Date(test.date);
+      return now.getFullYear() === testDate.getFullYear();
+    });
+  } else if (filter === 'month') {
+    history = history.filter(test => {
+      const testDate = new Date(test.date);
+      return now.getFullYear() === testDate.getFullYear() &&
+        now.getMonth() === testDate.getMonth();
+    });
+  } else if (filter === 'week') {
+    history = history.filter(test => {
+      const testDate = new Date(test.date);
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return testDate >= oneWeekAgo;
+    });
+  }
+  const subjects = [
+    'English 1st Paper', 'English 2nd Paper',
+    'Bengali 1st Paper', 'Bengali 2nd Paper',
+    'Mathematics 1st Paper', 'Mathematics 2nd Paper',
+    'Physics 1st Paper', 'Physics 2nd Paper',
+    'Biology 1st Paper', 'Biology 2nd Paper',
+    'Chemistry 1st Paper', 'Chemistry 2nd Paper',
+    'Information and Communication Technology'
+  ];
+  const subjectData = {};
+  subjects.forEach(subject => {
+    const subjectTests = history.filter(test => test.subject === subject && test.score !== null);
+    if (subjectTests.length > 0) {
+      const totalScore = subjectTests.reduce((sum, test) => sum + test.score, 0);
+      subjectData[subject] = Math.round(totalScore / subjectTests.length);
+    } else {
+      subjectData[subject] = 0;
+    }
+  });
+  elements.chartContainer.innerHTML = '';
+  const maxScore = Math.max(...Object.values(subjectData), 100) || 100;
+  const chartHeight = 250;
+  subjects.forEach(subject => {
+    const score = subjectData[subject] || 0;
+    const barHeight = (score / maxScore) * chartHeight;
+    const barContainer = document.createElement('div');
+    barContainer.className = 'bar-container';
+    barContainer.style.height = `${chartHeight}px`;
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = `${barHeight}px`;
+bar.style.setProperty('--subject-color', getSubjectColor(subject));
+    bar.title = `${subject}: ${score}%`;
+    if (score > 0) {
+      bar.textContent = score;
+    }
+    const label = document.createElement('div');
+    label.className = 'chart-label';
+    label.textContent =
+      subject === 'Information and Communication Technology'
+        ? 'ICT'
+        : subject.split(' ').slice(0, 2).join(' ');
+    barContainer.appendChild(bar);
+    barContainer.appendChild(label);
+    elements.chartContainer.appendChild(barContainer);
+  });
+}
+
+function filterAnalysis(filter) {
+  document.querySelectorAll('.time-filter button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  renderSubjectAnalysis(filter);
+}
+
+function selectSubject(subject) {
+  scrollToTop();
+  state.testSubject = subject;
+  elements.subjectTitle.textContent = subject;
+  elements.homeScreen.style.display = 'none';
+  elements.setupForm.style.display = 'block';
+  elements.resultStats.style.display = 'none';
+  elements.questionContainer.innerHTML = '';
+}
+
+function goBackToHome() {
+  // Only show cancel modal if test is in progress or in correct-answer phase
+  if ((state.testStarted || state.phase === 'providing-correct') && elements.questionContainer.innerHTML.trim() !== '') {
+    showAreYouSureModal(
+      'Are you sure you want to cancel this test? It will be removed from history.',
+      () => {
+        clearInterval(state.timer);
+        removePendingFromHistory();
+        resetToHome();
+      },
+      () => {}
+    );
+  } else {
+    resetToHome();
+  }
+}
+
+function resetToHome() {
+  if (state.timer) {
+    clearInterval(state.timer);
+    state.timer = null;
+  }
+  elements.homeScreen.style.display = 'block';
+  elements.setupForm.style.display = 'none';
+  elements.timer.style.display = 'none';
+  elements.testControls.style.display = 'none';
+  elements.progressContainer.style.display = 'none';
+  elements.questionContainer.innerHTML = '';
+  elements.resultStats.style.display = 'none';
+  state.testStarted = false;
+  state.phase = 'answering';
+  state.answers = {};
+  state.correctAnswers = {};
+  state.currentQuestionSet = [];
+  state.optionStyle = 'bengali';
+  state.optionCount = 4;
+  localStorage.removeItem('currentTestData');
+}
+
+function removePendingFromHistory() {
+  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  const idx = history.findIndex(
+    t => t.status === 'pending' &&
+      t.title === state.testTitle &&
+      t.subject === state.testSubject
+  );
+  if (idx > -1) {
+    history.splice(idx, 1);
+    localStorage.setItem('omrHistory', JSON.stringify(history));
+    loadRecentHistory();
+    renderSubjectAnalysis();
+  }
+}
+
+function startTest() {
+  scrollToTop();
+  localStorage.removeItem('currentTestData');
+  state.answers = {};
+  state.correctAnswers = {};
+  state.phase = 'answering';
+
+  state.testTitle = document.getElementById('testTitle').value.trim();
+  const start = parseInt(document.getElementById('startNum').value);
+  const end = parseInt(document.getElementById('endNum').value);
+  const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value) || 60;
+  state.optionStyle = (document.getElementById('optionStyle') && document.getElementById('optionStyle').value) || 'bengali';
+  state.optionCount = parseInt(document.getElementById('optionCount') && document.getElementById('optionCount').value, 10) || 4;
+
+  elements.testControls.style.display = 'none';
+  if (!state.testTitle) {
+    showModal('Test title cannot be empty!', () => {}, () => {});
+    return;
+  }
+  if (isNaN(start) || isNaN(end) || end < start) {
+    showModal('Please enter valid serial numbers!', () => {}, () => {});
+    return;
+  }
+  if (state.optionCount < 2 || state.optionCount > 6) {
+    showModal('Option count must be between 2 and 6.', () => {}, () => {});
+    return;
+  }
+
+  elements.testControls.style.display = 'flex';
+  elements.testControls.innerHTML = `
+    <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+    <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+    <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+  `;
+
+  state.totalQuestions = end - start + 1;
+  state.timeLeft = state.totalQuestions * timePerQuestion;
+  state.answers = {};
+  state.correctAnswers = {};
+  state.currentQuestionSet = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  state.testStarted = true;
+
+  elements.setupForm.style.display = 'none';
+  elements.timer.style.display = 'block';
+  elements.testControls.style.display = 'flex';
+  elements.progressContainer.style.display = 'block';
+  elements.questionContainer.innerHTML = '';
+  elements.resultStats.style.display = 'none';
+
+  const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+
+  state.currentQuestionSet.forEach(qNum => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.id = `q-${qNum}`;
+    div.innerHTML = `
+      <div class="question-number">Question ${qNum}</div>
+      <div class="options-container">
+        ${optionLabels.map(opt =>
+          `<button class="option-btn" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+        ).join('')}
+      </div>
+    `;
+    elements.questionContainer.appendChild(div);
+  });
+
+  updateTimer();
+  updateProgress();
+  clearInterval(state.timer);
+  state.timer = setInterval(updateTimer, 1000);
+}
+
+function selectAnswer(qNum, ans, btn) {
+  state.answers[qNum] = ans;
+  localStorage.setItem('currentTestData', JSON.stringify({
+    answers: state.answers,
+    testState: state
+  }));
+  const questionDiv = btn.closest('.question');
+  const buttons = questionDiv.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateProgress();
+}
+
+function updateTimer() {
+  if (state.timeLeft <= 0) {
+    clearInterval(state.timer);
+    showModal('Time is up!', () => { submitAnswers(); }, () => {});
+    return;
+  }
+  const minutes = Math.floor(state.timeLeft / 60);
+  const seconds = state.timeLeft % 60;
+  elements.timer.innerHTML = `Time Remaining: <span style="color: ${state.timeLeft <= 60 ? 'red' : 'var(--primary-color)'}">${minutes}:${seconds < 10 ? '0' : ''}${seconds}</span>`;
+  state.timeLeft--;
+}
+
+function updateProgress() {
+  const answered = Object.keys(state.answers).length;
+  const percentage = Math.round((answered / state.totalQuestions) * 100);
+  elements.progressBar.style.width = `${percentage}%`;
+  elements.progressBar.textContent = `${percentage}%`;
+}
+
+function submitAnswers() {
+  scrollToTop();
+  clearInterval(state.timer);
+  state.testStarted = false;
+  state.phase = 'providing-correct';
+  showAreYouSureModal(
+    'Are you ready to provide the correct answers?',
+    () => {
+      elements.questionContainer.innerHTML = '';
+      const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+      state.currentQuestionSet.forEach(qNum => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = `q-${qNum}`;
+        div.innerHTML = `
+          <div class="question-number">Correct Answer for Question ${qNum}</div>
+          <div class="options-container">
+            ${optionLabels.map(opt =>
+              `<button class="option-btn" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+            ).join('')}
+          </div>
+        `;
+        elements.questionContainer.appendChild(div);
+      });
+      elements.testControls.innerHTML = `
+        <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+        <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+        <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
+      `;
+      elements.progressContainer.style.display = 'none';
+      elements.timer.style.display = 'none';
+    },
+    () => {
+      showModal("You can save for later or return to the test. Do you want to save for later?",
+        () => { saveForLater(); },
+        () => { continueTest(); }
+      );
+    }
+  );
+}
+
+function selectCorrect(qNum, ans, btn) {
+  state.correctAnswers[qNum] = ans;
+  localStorage.setItem('currentTestData', JSON.stringify({
+    answers: state.answers,
+    testState: state
+  }));
+  const questionDiv = btn.closest('.question');
+  const buttons = questionDiv.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function checkAnswers() {
+  let correctCount = 0;
+  state.currentQuestionSet.forEach(qNum => {
+    const questionDiv = document.getElementById(`q-${qNum}`);
+    const userAnswer = state.answers[qNum];
+    const correctAnswer = state.correctAnswers[qNum];
+    if (userAnswer === correctAnswer) {
+      correctCount++;
+      questionDiv.classList.add('correct');
+    } else {
+      questionDiv.classList.add('mistake');
+    }
+  });
+  const score = Math.round((correctCount / state.totalQuestions) * 100);
+  document.getElementById('totalQuestions').textContent = state.totalQuestions;
+  document.getElementById('correctAnswers').textContent = correctCount;
+  document.getElementById('scorePercentage').textContent = `${score}%`;
+  elements.resultStats.style.display = 'block';
+  elements.testControls.style.display = 'none';
+  elements.timer.style.display = 'none';
+  elements.progressContainer.style.display = 'none';
+  saveToHistory('completed', state.answers, state.correctAnswers, state.totalQuestions, score, null, null, 'completed');
+  localStorage.removeItem('currentTestData');
+  showModal(`Your score: ${correctCount} / ${state.totalQuestions} (${score}%)`, () => { resetToHome(); }, null);
+}
+
+function saveForLater() {
+  showAreYouSureModal(
+    'Are you sure you want to save your progress for later?',
+    () => {
+      saveToHistory('pending', state.answers, state.correctAnswers, state.totalQuestions, null, state.timeLeft, { ...state }, state.phase);
+      localStorage.removeItem('currentTestData');
+      showModal('Your progress has been saved for later!', () => { resetToHome(); }, null);
+    },
+    () => {}
+  );
+}
+
+function cancelTest() {
+  showAreYouSureModal(
+    'Are you sure you want to cancel this test? It will be removed from history.',
+    () => {
+      clearInterval(state.timer);
+      removePendingFromHistory();
+      resetToHome();
+    },
+    () => {}
+  );
+}
+
+function saveToHistory(status, answers, corrects, total, score, timeLeft = null, extraState = null, phase = "answering") {
+  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  history = history.filter(t => !(t.status === 'pending' && t.title === state.testTitle && t.subject === state.testSubject));
+  history.unshift({
+    title: state.testTitle,
+    subject: state.testSubject,
+    date: new Date().toLocaleString(),
+    status: status,
+    answers: { ...answers },
+    correctAnswers: { ...corrects },
+    total: total,
+    score: score,
+    questionSet: [...state.currentQuestionSet],
+    timeLeft: timeLeft,
+    extraState: extraState,
+    phase: phase
+  });
+  localStorage.setItem('omrHistory', JSON.stringify(history));
+  loadRecentHistory();
+  renderSubjectAnalysis();
+}
+
+function showHistory() {
+  const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  displayHistory(history);
+  document.getElementById('historyModal').style.display = 'flex';
+}
+
+function filterHistory() {
+  const subjectFilter = document.getElementById('filterSubject').value;
+  const statusFilter = document.getElementById('filterStatus').value;
+  const sortFilter = document.getElementById('filterSort').value;
+  const searchTerm = document.getElementById('searchTitle').value.toLowerCase();
+  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  let filteredHistory = history.filter(test => {
+    const subjectMatch = subjectFilter === 'all' || test.subject === subjectFilter;
+    let statusMatch = true;
+    if (statusFilter === 'completed') {
+      statusMatch = test.status === 'completed';
+    } else if (statusFilter === 'pending') {
+      statusMatch = test.status === 'pending';
+    }
+    const searchMatch = test.title.toLowerCase().includes(searchTerm) ||
+      (test.subject && test.subject.toLowerCase().includes(searchTerm));
+    return subjectMatch && statusMatch && searchMatch;
+  });
+  switch (sortFilter) {
+    case 'newest':
+      filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+      break;
+    case 'oldest':
+      filteredHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+      break;
+    case 'highest':
+      filteredHistory.sort((a, b) => {
+        const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : -1;
+        const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : -1;
+        return bScore - aScore;
+      });
+      break;
+    case 'lowest':
+      filteredHistory.sort((a, b) => {
+        const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : Infinity;
+        const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : Infinity;
+        return aScore - bScore;
+      });
+      break;
+  }
+  displayHistory(filteredHistory);
+}
+
+function displayHistory(history) {
+  const historyList = document.getElementById('historyList');
+  historyList.innerHTML = '';
+  if (history.length === 0) {
+    historyList.innerHTML = '<p>No matching tests found.</p>';
+  } else {
+    history.forEach((test, index) => {
+      const testDiv = document.createElement('div');
+      testDiv.style.padding = '10px';
+      testDiv.style.borderBottom = '1px solid #444';
+      testDiv.style.cursor = 'pointer';
+      let statusColor = '#6c757d';
+      if (test.status === 'completed') statusColor = 'var(--success-color)';
+      else if (test.status === 'pending') statusColor = 'var(--warning-color)';
+      testDiv.innerHTML = `
+        <div style="font-weight: bold;">${test.title}</div>
+        <div style="font-size: 0.9em; color: #aaa;">${test.subject ?? ''} • ${test.date ?? ''}</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+          <span style="color: ${statusColor}">${test.status.toUpperCase()}</span>
+          ${test.score !== null && typeof test.score !== 'undefined' ? `<span style="font-weight: bold;">Score: ${test.score}%</span>` : ''}
+        </div>
+        <button class="btn btn-danger btn-xs" style="margin-top: 7px;position:relative;z-index:10;" onclick="event.stopPropagation(); confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
+      `;
+      testDiv.addEventListener('click', () => viewTestDetails(test));
+      historyList.appendChild(testDiv);
+    });
+  }
+}
+
+// Remove confirmation modal (always on top, never auto-reopens history)
+function confirmRemoveHistory(title, subject) {
+  closeHistoryModal();
+  setTimeout(() => {
+    showAreYouSureModal(
+      `Are you sure you want to remove "${title}" (${subject}) from history? This cannot be undone.`,
+      () => {
+        removeSinglePendingFromHistory(title, subject, true);
+      },
+      () => {}
+    );
+  }, 100);
+}
+
+function removeSinglePendingFromHistory(title, subject, silent = false) {
+  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  const idx = history.findIndex(t => t.title === title && t.subject === subject);
+  if (idx > -1) {
+    history.splice(idx, 1);
+    localStorage.setItem('omrHistory', JSON.stringify(history));
+    loadRecentHistory();
+    renderSubjectAnalysis();
+    if (!silent) showModal('Test removed from history.', () => { closeModal(); }, null);
+  } else {
+    if (!silent) showModal('Test not found.', () => { closeModal(); }, null);
+  }
+}
+
+function viewTestDetails(test) {
+  closeHistoryModal();
+  let content = `
+    <h3>${test.title}</h3>
+    <p><strong>Subject:</strong> ${test.subject ?? ''}</p>
+    <p><strong>Date:</strong> ${test.date ?? ''}</p>
+    <p><strong>Status:</strong> ${test.status ?? ''}</p>
+    ${test.score !== null && typeof test.score !== 'undefined' ? `<p><strong>Score:</strong> ${test.score}%</p>` : ''}
+    <p><strong>Questions:</strong> ${test.questionSet ? test.questionSet[0] : ''} to ${test.questionSet ? test.questionSet[test.questionSet.length - 1] : ''}</p>
+  `;
+
+  if (test.status === 'pending') {
+    if (test.phase === 'providing-correct') {
+      content += `<div class="modal-buttons">
+        <button class="btn btn-success" onclick="resumePendingTest('${test.date}', true)">Resume</button>
+        <button class="btn btn-danger" onclick="confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
+      </div>`;
+    } else {
+      content += `<div class="modal-buttons">
+        <button class="btn btn-success" onclick="resumePendingTest('${test.date}', false)">Resume</button>
+        <button class="btn btn-danger" onclick="confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
+      </div>`;
+    }
+  } else if (test.status === 'completed') {
+    content += `<div style="max-height: 300px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
+      <h4>Question Details</h4>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background: #444;">
+          <th style="padding: 8px; text-align: left;">Question</th>
+          <th style="padding: 8px; text-align: left;">Your Answer</th>
+          <th style="padding: 8px; text-align: left;">Correct Answer</th>
+        </tr>`;
+    test.questionSet.forEach(qNum => {
+      const userAns = test.answers[qNum] || 'Not answered';
+      const correctAns = test.correctAnswers[qNum] || '-';
+      const isCorrect = userAns === correctAns;
+      content += `
+        <tr style="border-bottom: 1px solid #444; background: ${isCorrect ? '#2a3a2a' : '#442a2a'}">
+          <td style="padding: 8px;">${qNum}</td>
+          <td style="padding: 8px;">${userAns}</td>
+          <td style="padding: 8px;">${correctAns}</td>
+        </tr>
+      `;
+    });
+    content += `</table></div>`;
+  }
+
+  showModal(content);
+}
+
+function resumePendingTest(date, isCorrectPhase = false) {
+  scrollToTop();
+  const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+  const test = history.find(t => t.date === date && t.status === 'pending');
+  if (!test) {
+    showModal('Pending test not found.', () => {}, null);
+    return;
+  }
+  state.testTitle = test.title;
+  state.testSubject = test.subject;
+  state.currentQuestionSet = test.questionSet;
+  state.totalQuestions = test.total;
+  state.answers = test.answers || {};
+  state.correctAnswers = test.correctAnswers || {};
+  state.timeLeft = test.timeLeft || (test.total * 60);
+  state.phase = test.phase || "answering";
+  state.optionStyle = (test.extraState && test.extraState.optionStyle) || 'bengali';
+  state.optionCount = (test.extraState && test.extraState.optionCount) || 4;
+  state.testStarted = !isCorrectPhase;
+  localStorage.setItem('currentTestData', JSON.stringify({
+    answers: state.answers,
+    testState: { ...state }
+  }));
+  closeModal();
+  elements.homeScreen.style.display = 'none';
+  elements.setupForm.style.display = 'none';
+  elements.resultStats.style.display = 'none';
+  if (isCorrectPhase || state.phase === 'providing-correct') {
+    state.phase = 'providing-correct';
+    elements.questionContainer.innerHTML = '';
+    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+    state.currentQuestionSet.forEach(qNum => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.id = `q-${qNum}`;
+      div.innerHTML = `
+        <div class="question-number">Correct Answer for Question ${qNum}</div>
+        <div class="options-container">
+          ${optionLabels.map(opt =>
+            `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+          ).join('')}
+        </div>
+      `;
+      elements.questionContainer.appendChild(div);
+    });
+    elements.testControls.style.display = 'flex';
+    elements.testControls.innerHTML = `
+      <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+      <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
+    `;
+    elements.progressContainer.style.display = 'none';
+    elements.timer.style.display = 'none';
+  } else {
+    elements.timer.style.display = 'block';
+    elements.progressContainer.style.display = 'block';
+    elements.testControls.style.display = 'flex';
+    elements.questionContainer.innerHTML = '';
+    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+    state.currentQuestionSet.forEach(qNum => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.id = `q-${qNum}`;
+      div.innerHTML = `
+        <div class="question-number">Question ${qNum}</div>
+        <div class="options-container">
+          ${optionLabels.map(opt =>
+            `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+          ).join('')}
+        </div>
+      `;
+      elements.questionContainer.appendChild(div);
+    });
+    elements.testControls.innerHTML = `
+      <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+      <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+      <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+    `;
+    updateProgress();
+    clearInterval(state.timer);
+    updateTimer();
+    state.timer = setInterval(updateTimer, 1000);
+  }
+}
+
+// Modal functions (NO EVAL, robust callback storage)
+const modalCallbacks = { onConfirm: null, onCancel: null };
+
+function showModal(message, onConfirm, onCancel) {
+  const modal = document.getElementById('modal');
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `<div>${message}</div>`;
+  const buttons = document.createElement('div');
+  buttons.className = 'modal-buttons';
+
+  modalCallbacks.onConfirm = onConfirm || null;
+  modalCallbacks.onCancel = onCancel || null;
+
+  // Only show OK if only "reminder"
+  if (!onConfirm && !onCancel) {
+    const okBtn = document.createElement('button');
+    okBtn.className = 'btn';
+    okBtn.textContent = 'OK';
+    okBtn.onclick = () => { closeModal(true); };
+    buttons.appendChild(okBtn);
+  } else if (onConfirm && onCancel) {
+    const yesBtn = document.createElement('button');
+    yesBtn.className = 'btn';
+    yesBtn.textContent = 'Yes';
+    yesBtn.onclick = () => { closeModal(true); };
+    const noBtn = document.createElement('button');
+    noBtn.className = 'btn btn-secondary';
+    noBtn.textContent = 'No';
+    noBtn.onclick = () => { closeModal(false); };
+    buttons.appendChild(yesBtn);
+    buttons.appendChild(noBtn);
+  } else if (onConfirm) {
+    const okBtn = document.createElement('button');
+    okBtn.className = 'btn';
+    okBtn.textContent = 'OK';
+    okBtn.onclick = () => { closeModal(true); };
+    buttons.appendChild(okBtn);
+  } else {
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn';
+    closeBtn.textContent = 'Close';
+    closeBtn.onclick = () => { closeModal(); };
+    buttons.appendChild(closeBtn);
+  }
+  content.appendChild(buttons);
+  modal.style.display = 'flex';
+  modal.style.zIndex = 99999;
+}
+
+function closeModal(confirmed) {
+  const modal = document.getElementById('modal');
+  modal.style.display = 'none';
+  if (confirmed === true && typeof modalCallbacks.onConfirm === 'function') {
+    modalCallbacks.onConfirm();
+  } else if (confirmed === false && typeof modalCallbacks.onCancel === 'function') {
+    modalCallbacks.onCancel();
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDark);
+  if (document.getElementById('themeToggle')) {
+    document.getElementById('themeToggle').textContent = isDark ? '🌞' : '🌓';
+  }
+}
+
+function showHelpModal() {
+  showModal(`
+<h1 style="font-size: 2.8em; font-weight: bold; margin-top: 40px;">How to Use Gravithon</h1>
+
+<ol>
+  <li>Select a subject from the list</li>
+  <li>Enter test details (title, question range, time per question)</li>
+  <li>Answer questions by selecting options</li>
+  <li>Submit answers and check your score</li>
+  <li>Review history to track progress</li>
+</ol>
+
+<h1 style="font-size: 2.8em; font-weight: bold; margin-top: 40px;">Tips for Success</h1>
+
+<ul>
+  <li>Practice regularly to improve speed</li>
+  <li>Start with more time per question</li>
+  <li>Analyze mistakes in your history</li>
+  <li>Great for HSC and admission test prep</li>
+</ul>
+
+<h1 style="font-size: 2.8em; font-weight: bold; margin-top: 60px;">How to Use Gravithon: The Complete & Evolving Guide</h1>
+
+<p><strong>Welcome to Gravithon!</strong> Designed for effective OMR-style exam practice and progress tracking, this platform integrates features based on your feedback and community contributions.</p>
+
+<h2 style="font-size: 2.2em; font-weight: bold; margin-top: 40px;">Step-by-Step Usage</h2>
+
+<ol>
+  <li><strong>Choose Your Subject:</strong> Wide range including English, Bengali, Math, Science, ICT. Works smoothly on keyboard and mobile.</li>
+  <li><strong>Set Up Your Test:</strong> Title, range, option style, number of options, time per question.</li>
+  <li><strong>Take the Test:</strong> Live progress, autosave answers, resume support after refresh/close.</li>
+  <li><strong>Submit and Provide Correct Answers:</strong> Enter answer key to get scored.</li>
+  <li><strong>Instant Scoring:</strong> Score breakdown, feedback, all saved automatically.</li>
+  <li><strong>History & Resume:</strong> Filter, search, resume unfinished, remove safely.</li>
+  <li><strong>Analyze Performance:</strong> View subject-wise progress charts over time.</li>
+  <li><strong>Personalization:</strong> Light/dark mode, clear modals, mobile responsive.</li>
+  <li><strong>Community Features:</strong> Bulk resume, auto-save warning, keyboard navigation, mobile swipe, and more.</li>
+</ol>
+
+<h2 style="font-size: 2.2em; font-weight: bold; margin-top: 40px;">Tips for Success</h2>
+
+<ul>
+  <li>Practice regularly to boost speed and confidence.</li>
+  <li>Start with more time, reduce it as you improve.</li>
+  <li>Review breakdowns to identify weak spots.</li>
+  <li>Use clear titles to track tests easily.</li>
+  <li>Ideal for HSC, admission, and aptitude test prep.</li>
+</ul>
+
+
+<p style="margin-top: 30px;"><em>Help Gravithon grow. Suggest features, report bugs, or send feedback via the app.</em></p>
+
+  `);
+}
+
+function closeHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  if (modal) modal.style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+window.confirmRemoveHistory = confirmRemoveHistory;
+window.removeSinglePendingFromHistory = removeSinglePendingFromHistory;
+window.viewTestDetails = viewTestDetails;
+window.resumePendingTest = resumePendingTest;
+window.selectAnswer = selectAnswer;
+window.selectCorrect = selectCorrect;
+window.submitAnswers = submitAnswers;
+window.checkAnswers = checkAnswers;
+window.saveForLater = saveForLater;
+window.cancelTest = cancelTest;
+window.goBackToHome = goBackToHome;
+window.handleSubjectKeyDown = handleSubjectKeyDown;
+window.startTest = startTest;
+window.showHelpModal = showHelpModal;
+window.showHistory = showHistory;
+window.closeHistoryModal = closeHistoryModal;
+window.toggleTheme = toggleTheme;
+window.showAreYouSureModal = showAreYouSureModal;
+</script>
+</body>
+</html>
+Check why the bars colour are not different?
