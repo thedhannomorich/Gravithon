@@ -18,6 +18,175 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
+/* ==================== */
+/* LOADING INDICATORS   */
+/* ==================== */
+:root {
+  --loading-bg: rgba(23, 24, 26, 0.85);
+  --loading-spinner-color: #3f7e5e;
+  --loading-spinner-secondary: rgba(63, 126, 94, 0.2);
+  --loading-text-color: #e3e5e8;
+}
+
+body:not(.dark-mode) {
+  --loading-bg: rgba(247, 248, 250, 0.9);
+  --loading-spinner-color: #7cc6a8;
+  --loading-spinner-secondary: rgba(124, 198, 168, 0.2);
+  --loading-text-color: #232529;
+}
+
+/* Main loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--loading-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Spinner container */
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.loading-overlay.active .loading-content {
+  transform: scale(1);
+}
+
+/* Modern spinner animation */
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  border: 3px solid;
+  border-color: var(--loading-spinner-secondary) var(--loading-spinner-secondary) var(--loading-spinner-color);
+  animation: rotation 1s linear infinite;
+}
+
+.loading-spinner::after {
+  content: '';  
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid;
+  border-color: var(--loading-spinner-color) transparent transparent transparent;
+  animation: rotationBack 0.5s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotationBack {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* Loading text */
+.loading-text {
+  color: var(--loading-text-color);
+  margin-top: 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  max-width: 200px;
+  line-height: 1.4;
+}
+
+/* Button loading states */
+.btn.loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: 3px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+  from { transform: rotate(0turn); }
+  to { transform: rotate(1turn); }
+}
+
+/* Small inline loader */
+.inline-loader {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--loading-spinner-secondary);
+  border-top-color: var(--loading-spinner-color);
+  border-radius: 50%;
+  animation: rotation 1s linear infinite;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+/* Card skeleton loading */
+.skeleton-loading {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--dark-card);
+}
+
+.skeleton-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 /* Animations */<link rel="icon" type="image/png" href="logo.png">
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px);}
@@ -1010,6 +1179,63 @@ body:not(.dark-mode) .history-item {
   <span class="footer-email" id="copyEmail">thedhannomorich@gmail.com</span>
 </footer>
 <script>
+// ======================
+// LOADING UTILITIES
+// ======================
+const loading = {
+  // Show full-page loading
+  show: function(text = 'Loading...', duration = 300) {
+    const overlay = document.getElementById('loadingOverlay');
+    const textEl = document.getElementById('loadingText');
+    
+    textEl.textContent = text;
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Fade in animation
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+    }, 10);
+    
+    return {
+      hide: () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          document.body.style.overflow = '';
+        }, 200);
+      }
+    };
+  },
+  
+  // Show button loading state
+  button: function(button, text = 'Processing...') {
+    const originalText = button.textContent;
+    button.innerHTML = `${text} <span class="inline-loader"></span>`;
+    button.classList.add('loading');
+    button.disabled = true;
+    
+    return {
+      reset: () => {
+        button.textContent = originalText;
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    };
+  },
+  
+  // Create skeleton loading for cards
+  skeleton: function(container, count = 1, className = 'question') {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const skeleton = document.createElement('div');
+      skeleton.className = `${className} skeleton-loading`;
+      skeleton.style.height = '120px';
+      container.appendChild(skeleton);
+    }
+  }
+};
+
 // Application state
 const state = {
   answers: {},
@@ -1023,7 +1249,7 @@ const state = {
   currentQuestionSet: [],
   optionStyle: 'bengali',
   optionCount: 4,
-  phase: 'answering' // Track whether in answering or correct answer phase
+  phase: 'answering'
 };
 
 // DOM elements
@@ -1060,7 +1286,6 @@ window.addEventListener('beforeunload', function (e) {
       state.phase
     );
     localStorage.removeItem('currentTestData');
-    // Remind user, but do not offer resume modal
     const confirmationMessage = 'You have an unfinished test. Are you sure you want to leave? Changes might not save.';
     (e || window.event).returnValue = confirmationMessage;
     return confirmationMessage;
@@ -1123,109 +1348,121 @@ function showAreYouSureModal(message, onYes, onNo) {
 
 // Initialize the app
 function init() {
-  // On reload, simply remind if unfinished test exists (no more resume prompt)
-  const unfinishedTest = localStorage.getItem('currentTestData');
-  if (unfinishedTest) {
-    showModal(
-      'You have an unfinished test. It has been saved in the History Section.',
-      null,
-      null
-    );
-    localStorage.removeItem('currentTestData');
-    loadRecentHistory();
-  } else {
-    loadRecentHistory();
-  }
-
-  renderSubjectAnalysis();
-  startHistoryScroll();
-
-  // Initialize dark mode if previously set
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-    if (document.getElementById('themeToggle')) {
-      document.getElementById('themeToggle').textContent = '🌞';
+  const loadingCtrl = loading.show('Initializing Gravithon...', 500);
+  
+  setTimeout(() => {
+    // On reload, simply remind if unfinished test exists
+    const unfinishedTest = localStorage.getItem('currentTestData');
+    if (unfinishedTest) {
+      showModal(
+        'You have an unfinished test. It has been saved in the History Section.',
+        null,
+        null
+      );
+      localStorage.removeItem('currentTestData');
+      loadRecentHistory();
+    } else {
+      loadRecentHistory();
     }
-  } else {
-    if (document.getElementById('themeToggle')) {
-      document.getElementById('themeToggle').textContent = '🌓';
-    }
-  }
 
-  // Initialize email copy functionality
-  document.getElementById('copyEmail')?.addEventListener('click', function () {
-    const email = this.textContent;
-    navigator.clipboard.writeText(email).then(() => {
-      const originalText = this.textContent;
-      this.textContent = 'Copied!';
-      setTimeout(() => (this.textContent = originalText), 1500);
-    }).catch(() => {
-      alert('Failed to copy email. Please copy manually.');
+    renderSubjectAnalysis();
+    startHistoryScroll();
+
+    // Initialize dark mode if previously set
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+      if (document.getElementById('themeToggle')) {
+        document.getElementById('themeToggle').textContent = '🌞';
+      }
+    } else {
+      if (document.getElementById('themeToggle')) {
+        document.getElementById('themeToggle').textContent = '🌓';
+      }
+    }
+
+    // Initialize email copy functionality
+    document.getElementById('copyEmail')?.addEventListener('click', function () {
+      const email = this.textContent;
+      navigator.clipboard.writeText(email).then(() => {
+        const originalText = this.textContent;
+        this.textContent = 'Copied!';
+        setTimeout(() => (this.textContent = originalText), 1500);
+      }).catch(() => {
+        alert('Failed to copy email. Please copy manually.');
+      });
     });
-  });
+    
+    loadingCtrl.hide();
+  }, 600);
 }
 
 function continueTest() {
-  scrollToTop();
-  elements.homeScreen.style.display = 'none';
-  elements.setupForm.style.display = 'none';
-  elements.resultStats.style.display = 'none';
-  elements.testControls.style.display = 'flex';
-  elements.progressContainer.style.display = 'block';
-  elements.timer.style.display = state.phase === 'answering' ? 'block' : 'none';
-  elements.questionContainer.innerHTML = '';
+  const loadingCtrl = loading.show('Loading test...');
+  
+  setTimeout(() => {
+    scrollToTop();
+    elements.homeScreen.style.display = 'none';
+    elements.setupForm.style.display = 'none';
+    elements.resultStats.style.display = 'none';
+    elements.testControls.style.display = 'flex';
+    elements.progressContainer.style.display = 'block';
+    elements.timer.style.display = state.phase === 'answering' ? 'block' : 'none';
+    elements.questionContainer.innerHTML = '';
 
-  const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
 
-  if (state.phase === 'providing-correct') {
-    state.currentQuestionSet.forEach(qNum => {
-      const div = document.createElement('div');
-      div.className = 'question';
-      div.id = `q-${qNum}`;
-      div.innerHTML = `
-            <div class="question-number">Correct Answer for Question ${qNum}</div>
-            <div class="options-container">
-              ${optionLabels.map(opt =>
-                `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
-              ).join('')}
-            </div>
-          `;
-      elements.questionContainer.appendChild(div);
-    });
-    elements.testControls.innerHTML = `
-        <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
-        <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-        <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
-      `;
-    elements.progressContainer.style.display = 'none';
-    elements.timer.style.display = 'none';
-    state.testStarted = false;
-  } else {
-    state.currentQuestionSet.forEach(qNum => {
-      const div = document.createElement('div');
-      div.className = 'question';
-      div.id = `q-${qNum}`;
-      div.innerHTML = `
-            <div class="question-number">Question ${qNum}</div>
-            <div class="options-container">
-              ${optionLabels.map(opt =>
-                `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
-              ).join('')}
-            </div>
-          `;
-      elements.questionContainer.appendChild(div);
-    });
-    elements.testControls.innerHTML = `
-        <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
-        <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
-        <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-      `;
-    updateProgress();
-    clearInterval(state.timer);
-    updateTimer();
-    state.timer = setInterval(updateTimer, 1000);
-    state.testStarted = true;
-  }
+    if (state.phase === 'providing-correct') {
+      state.currentQuestionSet.forEach(qNum => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = `q-${qNum}`;
+        div.innerHTML = `
+              <div class="question-number">Correct Answer for Question ${qNum}</div>
+              <div class="options-container">
+                ${optionLabels.map(opt =>
+                  `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+                ).join('')}
+              </div>
+            `;
+        elements.questionContainer.appendChild(div);
+      });
+      elements.testControls.innerHTML = `
+          <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+          <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+          <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
+        `;
+      elements.progressContainer.style.display = 'none';
+      elements.timer.style.display = 'none';
+      state.testStarted = false;
+    } else {
+      state.currentQuestionSet.forEach(qNum => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = `q-${qNum}`;
+        div.innerHTML = `
+              <div class="question-number">Question ${qNum}</div>
+              <div class="options-container">
+                ${optionLabels.map(opt =>
+                  `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+                ).join('')}
+              </div>
+            `;
+        elements.questionContainer.appendChild(div);
+      });
+      elements.testControls.innerHTML = `
+          <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+          <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+          <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+        `;
+      updateProgress();
+      clearInterval(state.timer);
+      updateTimer();
+      state.timer = setInterval(updateTimer, 1000);
+      state.testStarted = true;
+    }
+    
+    loadingCtrl.hide();
+  }, 500);
 }
 
 function startHistoryScroll() {
@@ -1246,37 +1483,44 @@ function startHistoryScroll() {
 }
 
 function loadRecentHistory() {
-  let history = [];
-  try {
-    history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
-  } catch {
-    history = [];
-    localStorage.removeItem('omrHistory');
-  }
-  history = history.slice(0, 5);
-  elements.historyScroll.innerHTML = '';
-  if (history.length === 0) {
-    elements.historyScroll.innerHTML = '<p>No recent tests found.</p>';
-    return;
-  }
-  history.forEach(test => {
-    const testDiv = document.createElement('div');
-    testDiv.className = 'history-item';
-    testDiv.innerHTML = `
-      <h4>${test.title}</h4>
-      <p>${test.subject ?? ''}</p>
-      <p>${test.date ?? ''}</p>
-      ${test.score !== null && typeof test.score !== 'undefined' ? `<p><strong>Score:</strong> ${test.score}%</p>` : '<p>Pending</p>'}
-      <button class="btn btn-danger btn-xs" style="margin-top: 6px;position:relative;z-index:10;" onclick="event.stopPropagation(); confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
-    `;
-    testDiv.addEventListener('click', () => viewTestDetails(test));
-    elements.historyScroll.appendChild(testDiv);
-  });
+  const loadingCtrl = loading.show('Loading recent history...', 300);
+  
+  setTimeout(() => {
+    let history = [];
+    try {
+      history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+    } catch {
+      history = [];
+      localStorage.removeItem('omrHistory');
+    }
+    history = history.slice(0, 5);
+    elements.historyScroll.innerHTML = '';
+    if (history.length === 0) {
+      elements.historyScroll.innerHTML = '<p>No recent tests found.</p>';
+    } else {
+      history.forEach(test => {
+        const testDiv = document.createElement('div');
+        testDiv.className = 'history-item';
+        testDiv.innerHTML = `
+          <h4>${test.title}</h4>
+          <p>${test.subject ?? ''}</p>
+          <p>${test.date ?? ''}</p>
+          ${test.score !== null && typeof test.score !== 'undefined' ? `<p><strong>Score:</strong> ${test.score}%</p>` : '<p>Pending</p>'}
+          <button class="btn btn-danger btn-xs" style="margin-top: 6px;position:relative;z-index:10;" onclick="event.stopPropagation(); confirmRemoveHistory('${test.title.replace(/'/g, "\\'")}', '${test.subject.replace(/'/g, "\\'")}')">Remove</button>
+        `;
+        testDiv.addEventListener('click', () => viewTestDetails(test));
+        elements.historyScroll.appendChild(testDiv);
+      });
+    }
+    loadingCtrl.hide();
+  }, 400);
 }
 
 function renderSubjectAnalysis(filter = 'all') {
+  // No loading indicator for this function since it's triggered by time filter
   let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
   const now = new Date();
+  
   if (filter === 'year') {
     history = history.filter(test => {
       const testDate = new Date(test.date);
@@ -1295,6 +1539,7 @@ function renderSubjectAnalysis(filter = 'all') {
       return testDate >= oneWeekAgo;
     });
   }
+  
   const subjects = [
     'English 1st Paper', 'English 2nd Paper',
     'Bengali 1st Paper', 'Bengali 2nd Paper',
@@ -1304,6 +1549,7 @@ function renderSubjectAnalysis(filter = 'all') {
     'Chemistry 1st Paper', 'Chemistry 2nd Paper',
     'Information and Communication Technology'
   ];
+  
   const subjectData = {};
   subjects.forEach(subject => {
     const subjectTests = history.filter(test => test.subject === subject && test.score !== null);
@@ -1314,29 +1560,35 @@ function renderSubjectAnalysis(filter = 'all') {
       subjectData[subject] = 0;
     }
   });
+  
   elements.chartContainer.innerHTML = '';
   const maxScore = Math.max(...Object.values(subjectData), 100) || 100;
   const chartHeight = 250;
+  
   subjects.forEach(subject => {
     const score = subjectData[subject] || 0;
     const barHeight = (score / maxScore) * chartHeight;
     const barContainer = document.createElement('div');
     barContainer.className = 'bar-container';
     barContainer.style.height = `${chartHeight}px`;
+    
     const bar = document.createElement('div');
     bar.className = 'bar';
     bar.style.height = `${barHeight}px`;
-bar.style.setProperty('--subject-color', getSubjectColor(subject));
+    bar.style.setProperty('--subject-color', getSubjectColor(subject));
     bar.title = `${subject}: ${score}%`;
+    
     if (score > 0) {
       bar.textContent = score;
     }
+    
     const label = document.createElement('div');
     label.className = 'chart-label';
     label.textContent =
       subject === 'Information and Communication Technology'
         ? 'ICT'
         : subject.split(' ').slice(0, 2).join(' ');
+    
     barContainer.appendChild(bar);
     barContainer.appendChild(label);
     elements.chartContainer.appendChild(barContainer);
@@ -1344,21 +1596,31 @@ bar.style.setProperty('--subject-color', getSubjectColor(subject));
 }
 
 function filterAnalysis(filter) {
+  // Remove active class from all buttons
   document.querySelectorAll('.time-filter button').forEach(btn => {
     btn.classList.remove('active');
   });
+  
+  // Add active class to clicked button
   event.target.classList.add('active');
+  
+  // Call renderSubjectAnalysis without loading indicator
   renderSubjectAnalysis(filter);
 }
 
 function selectSubject(subject) {
-  scrollToTop();
-  state.testSubject = subject;
-  elements.subjectTitle.textContent = subject;
-  elements.homeScreen.style.display = 'none';
-  elements.setupForm.style.display = 'block';
-  elements.resultStats.style.display = 'none';
-  elements.questionContainer.innerHTML = '';
+  const loadingCtrl = loading.show(`Preparing ${subject}...`);
+  
+  setTimeout(() => {
+    scrollToTop();
+    state.testSubject = subject;
+    elements.subjectTitle.textContent = subject;
+    elements.homeScreen.style.display = 'none';
+    elements.setupForm.style.display = 'block';
+    elements.resultStats.style.display = 'none';
+    elements.questionContainer.innerHTML = '';
+    loadingCtrl.hide();
+  }, 500);
 }
 
 function goBackToHome() {
@@ -1367,9 +1629,13 @@ function goBackToHome() {
     showAreYouSureModal(
       'Are you sure you want to cancel this test? It will be removed from history.',
       () => {
-        clearInterval(state.timer);
-        removePendingFromHistory();
-        resetToHome();
+        const loadingCtrl = loading.show('Cancelling test...');
+        setTimeout(() => {
+          clearInterval(state.timer);
+          removePendingFromHistory();
+          resetToHome();
+          loadingCtrl.hide();
+        }, 400);
       },
       () => {}
     );
@@ -1379,25 +1645,30 @@ function goBackToHome() {
 }
 
 function resetToHome() {
-  if (state.timer) {
-    clearInterval(state.timer);
-    state.timer = null;
-  }
-  elements.homeScreen.style.display = 'block';
-  elements.setupForm.style.display = 'none';
-  elements.timer.style.display = 'none';
-  elements.testControls.style.display = 'none';
-  elements.progressContainer.style.display = 'none';
-  elements.questionContainer.innerHTML = '';
-  elements.resultStats.style.display = 'none';
-  state.testStarted = false;
-  state.phase = 'answering';
-  state.answers = {};
-  state.correctAnswers = {};
-  state.currentQuestionSet = [];
-  state.optionStyle = 'bengali';
-  state.optionCount = 4;
-  localStorage.removeItem('currentTestData');
+  const loadingCtrl = loading.show('Returning home...');
+  
+  setTimeout(() => {
+    if (state.timer) {
+      clearInterval(state.timer);
+      state.timer = null;
+    }
+    elements.homeScreen.style.display = 'block';
+    elements.setupForm.style.display = 'none';
+    elements.timer.style.display = 'none';
+    elements.testControls.style.display = 'none';
+    elements.progressContainer.style.display = 'none';
+    elements.questionContainer.innerHTML = '';
+    elements.resultStats.style.display = 'none';
+    state.testStarted = false;
+    state.phase = 'answering';
+    state.answers = {};
+    state.correctAnswers = {};
+    state.currentQuestionSet = [];
+    state.optionStyle = 'bengali';
+    state.optionCount = 4;
+    localStorage.removeItem('currentTestData');
+    loadingCtrl.hide();
+  }, 400);
 }
 
 function removePendingFromHistory() {
@@ -1416,75 +1687,83 @@ function removePendingFromHistory() {
 }
 
 function startTest() {
-  scrollToTop();
-  localStorage.removeItem('currentTestData');
-  state.answers = {};
-  state.correctAnswers = {};
-  state.phase = 'answering';
+  const buttonLoading = loading.button(event.target, 'Setting up test...');
+  
+  setTimeout(() => {
+    scrollToTop();
+    localStorage.removeItem('currentTestData');
+    state.answers = {};
+    state.correctAnswers = {};
+    state.phase = 'answering';
 
-  state.testTitle = document.getElementById('testTitle').value.trim();
-  const start = parseInt(document.getElementById('startNum').value);
-  const end = parseInt(document.getElementById('endNum').value);
-  const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value) || 60;
-  state.optionStyle = (document.getElementById('optionStyle') && document.getElementById('optionStyle').value) || 'bengali';
-  state.optionCount = parseInt(document.getElementById('optionCount') && document.getElementById('optionCount').value, 10) || 4;
+    state.testTitle = document.getElementById('testTitle').value.trim();
+    const start = parseInt(document.getElementById('startNum').value);
+    const end = parseInt(document.getElementById('endNum').value);
+    const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value) || 60;
+    state.optionStyle = (document.getElementById('optionStyle') && document.getElementById('optionStyle').value) || 'bengali';
+    state.optionCount = parseInt(document.getElementById('optionCount') && document.getElementById('optionCount').value, 10) || 4;
 
-  elements.testControls.style.display = 'none';
-  if (!state.testTitle) {
-    showModal('Test title cannot be empty!', () => {}, () => {});
-    return;
-  }
-  if (isNaN(start) || isNaN(end) || end < start) {
-    showModal('Please enter valid serial numbers!', () => {}, () => {});
-    return;
-  }
-  if (state.optionCount < 2 || state.optionCount > 6) {
-    showModal('Option count must be between 2 and 6.', () => {}, () => {});
-    return;
-  }
+    elements.testControls.style.display = 'none';
+    if (!state.testTitle) {
+      buttonLoading.reset();
+      showModal('Test title cannot be empty!', () => {}, () => {});
+      return;
+    }
+    if (isNaN(start) || isNaN(end) || end < start) {
+      buttonLoading.reset();
+      showModal('Please enter valid serial numbers!', () => {}, () => {});
+      return;
+    }
+    if (state.optionCount < 2 || state.optionCount > 6) {
+      buttonLoading.reset();
+      showModal('Option count must be between 2 and 6.', () => {}, () => {});
+      return;
+    }
 
-  elements.testControls.style.display = 'flex';
-  elements.testControls.innerHTML = `
-    <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
-    <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
-    <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-  `;
-
-  state.totalQuestions = end - start + 1;
-  state.timeLeft = state.totalQuestions * timePerQuestion;
-  state.answers = {};
-  state.correctAnswers = {};
-  state.currentQuestionSet = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  state.testStarted = true;
-
-  elements.setupForm.style.display = 'none';
-  elements.timer.style.display = 'block';
-  elements.testControls.style.display = 'flex';
-  elements.progressContainer.style.display = 'block';
-  elements.questionContainer.innerHTML = '';
-  elements.resultStats.style.display = 'none';
-
-  const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
-
-  state.currentQuestionSet.forEach(qNum => {
-    const div = document.createElement('div');
-    div.className = 'question';
-    div.id = `q-${qNum}`;
-    div.innerHTML = `
-      <div class="question-number">Question ${qNum}</div>
-      <div class="options-container">
-        ${optionLabels.map(opt =>
-          `<button class="option-btn" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
-        ).join('')}
-      </div>
+    elements.testControls.style.display = 'flex';
+    elements.testControls.innerHTML = `
+      <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+      <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+      <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
     `;
-    elements.questionContainer.appendChild(div);
-  });
 
-  updateTimer();
-  updateProgress();
-  clearInterval(state.timer);
-  state.timer = setInterval(updateTimer, 1000);
+    state.totalQuestions = end - start + 1;
+    state.timeLeft = state.totalQuestions * timePerQuestion;
+    state.answers = {};
+    state.correctAnswers = {};
+    state.currentQuestionSet = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    state.testStarted = true;
+
+    elements.setupForm.style.display = 'none';
+    elements.timer.style.display = 'block';
+    elements.testControls.style.display = 'flex';
+    elements.progressContainer.style.display = 'block';
+    elements.questionContainer.innerHTML = '';
+    elements.resultStats.style.display = 'none';
+
+    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+
+    state.currentQuestionSet.forEach(qNum => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.id = `q-${qNum}`;
+      div.innerHTML = `
+        <div class="question-number">Question ${qNum}</div>
+        <div class="options-container">
+          ${optionLabels.map(opt =>
+            `<button class="option-btn" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+          ).join('')}
+        </div>
+      `;
+      elements.questionContainer.appendChild(div);
+    });
+
+    updateTimer();
+    updateProgress();
+    clearInterval(state.timer);
+    state.timer = setInterval(updateTimer, 1000);
+    buttonLoading.reset();
+  }, 600);
 }
 
 function selectAnswer(qNum, ans, btn) {
@@ -1520,44 +1799,50 @@ function updateProgress() {
 }
 
 function submitAnswers() {
-  scrollToTop();
-  clearInterval(state.timer);
-  state.testStarted = false;
-  state.phase = 'providing-correct';
-  showAreYouSureModal(
-    'Are you ready to provide the correct answers?',
-    () => {
-      elements.questionContainer.innerHTML = '';
-      const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
-      state.currentQuestionSet.forEach(qNum => {
-        const div = document.createElement('div');
-        div.className = 'question';
-        div.id = `q-${qNum}`;
-        div.innerHTML = `
-          <div class="question-number">Correct Answer for Question ${qNum}</div>
-          <div class="options-container">
-            ${optionLabels.map(opt =>
-              `<button class="option-btn" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
-            ).join('')}
-          </div>
+  const buttonLoading = loading.button(event.target, 'Processing answers...');
+  
+  setTimeout(() => {
+    scrollToTop();
+    clearInterval(state.timer);
+    state.testStarted = false;
+    state.phase = 'providing-correct';
+    showAreYouSureModal(
+      'Are you ready to provide the correct answers?',
+      () => {
+        elements.questionContainer.innerHTML = '';
+        const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+        state.currentQuestionSet.forEach(qNum => {
+          const div = document.createElement('div');
+          div.className = 'question';
+          div.id = `q-${qNum}`;
+          div.innerHTML = `
+            <div class="question-number">Correct Answer for Question ${qNum}</div>
+            <div class="options-container">
+              ${optionLabels.map(opt =>
+                `<button class="option-btn" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+              ).join('')}
+            </div>
+          `;
+          elements.questionContainer.appendChild(div);
+        });
+        elements.testControls.innerHTML = `
+          <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+          <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+          <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
         `;
-        elements.questionContainer.appendChild(div);
-      });
-      elements.testControls.innerHTML = `
-        <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
-        <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-        <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
-      `;
-      elements.progressContainer.style.display = 'none';
-      elements.timer.style.display = 'none';
-    },
-    () => {
-      showModal("You can save for later or return to the test. Do you want to save for later?",
-        () => { saveForLater(); },
-        () => { continueTest(); }
-      );
-    }
-  );
+        elements.progressContainer.style.display = 'none';
+        elements.timer.style.display = 'none';
+        buttonLoading.reset();
+      },
+      () => {
+        buttonLoading.reset();
+        showModal("You can save for later or return to the test. Do you want to save for later?",
+          () => { saveForLater(); },
+          () => { continueTest(); }
+        );
+      }
+    );
+  }, 500);
 }
 
 function selectCorrect(qNum, ans, btn) {
@@ -1573,38 +1858,47 @@ function selectCorrect(qNum, ans, btn) {
 }
 
 function checkAnswers() {
-  let correctCount = 0;
-  state.currentQuestionSet.forEach(qNum => {
-    const questionDiv = document.getElementById(`q-${qNum}`);
-    const userAnswer = state.answers[qNum];
-    const correctAnswer = state.correctAnswers[qNum];
-    if (userAnswer === correctAnswer) {
-      correctCount++;
-      questionDiv.classList.add('correct');
-    } else {
-      questionDiv.classList.add('mistake');
-    }
-  });
-  const score = Math.round((correctCount / state.totalQuestions) * 100);
-  document.getElementById('totalQuestions').textContent = state.totalQuestions;
-  document.getElementById('correctAnswers').textContent = correctCount;
-  document.getElementById('scorePercentage').textContent = `${score}%`;
-  elements.resultStats.style.display = 'block';
-  elements.testControls.style.display = 'none';
-  elements.timer.style.display = 'none';
-  elements.progressContainer.style.display = 'none';
-  saveToHistory('completed', state.answers, state.correctAnswers, state.totalQuestions, score, null, null, 'completed');
-  localStorage.removeItem('currentTestData');
-  showModal(`Your score: ${correctCount} / ${state.totalQuestions} (${score}%)`, () => { resetToHome(); }, null);
+  const buttonLoading = loading.button(event.target, 'Checking answers...');
+  
+  setTimeout(() => {
+    let correctCount = 0;
+    state.currentQuestionSet.forEach(qNum => {
+      const questionDiv = document.getElementById(`q-${qNum}`);
+      const userAnswer = state.answers[qNum];
+      const correctAnswer = state.correctAnswers[qNum];
+      if (userAnswer === correctAnswer) {
+        correctCount++;
+        questionDiv.classList.add('correct');
+      } else {
+        questionDiv.classList.add('mistake');
+      }
+    });
+    const score = Math.round((correctCount / state.totalQuestions) * 100);
+    document.getElementById('totalQuestions').textContent = state.totalQuestions;
+    document.getElementById('correctAnswers').textContent = correctCount;
+    document.getElementById('scorePercentage').textContent = `${score}%`;
+    elements.resultStats.style.display = 'block';
+    elements.testControls.style.display = 'none';
+    elements.timer.style.display = 'none';
+    elements.progressContainer.style.display = 'none';
+    saveToHistory('completed', state.answers, state.correctAnswers, state.totalQuestions, score, null, null, 'completed');
+    localStorage.removeItem('currentTestData');
+    buttonLoading.reset();
+    showModal(`Your score: ${correctCount} / ${state.totalQuestions} (${score}%)`, () => { resetToHome(); }, null);
+  }, 700);
 }
 
 function saveForLater() {
   showAreYouSureModal(
     'Are you sure you want to save your progress for later?',
     () => {
-      saveToHistory('pending', state.answers, state.correctAnswers, state.totalQuestions, null, state.timeLeft, { ...state }, state.phase);
-      localStorage.removeItem('currentTestData');
-      showModal('Your progress has been saved for later!', () => { resetToHome(); }, null);
+      const loadingCtrl = loading.show('Saving progress...');
+      setTimeout(() => {
+        saveToHistory('pending', state.answers, state.correctAnswers, state.totalQuestions, null, state.timeLeft, { ...state }, state.phase);
+        localStorage.removeItem('currentTestData');
+        loadingCtrl.hide();
+        showModal('Your progress has been saved for later!', () => { resetToHome(); }, null);
+      }, 500);
     },
     () => {}
   );
@@ -1614,9 +1908,13 @@ function cancelTest() {
   showAreYouSureModal(
     'Are you sure you want to cancel this test? It will be removed from history.',
     () => {
-      clearInterval(state.timer);
-      removePendingFromHistory();
-      resetToHome();
+      const loadingCtrl = loading.show('Cancelling test...');
+      setTimeout(() => {
+        clearInterval(state.timer);
+        removePendingFromHistory();
+        resetToHome();
+        loadingCtrl.hide();
+      }, 500);
     },
     () => {}
   );
@@ -1645,52 +1943,62 @@ function saveToHistory(status, answers, corrects, total, score, timeLeft = null,
 }
 
 function showHistory() {
-  const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
-  displayHistory(history);
-  document.getElementById('historyModal').style.display = 'flex';
+  const loadingCtrl = loading.show('Loading history...');
+  
+  setTimeout(() => {
+    const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+    displayHistory(history);
+    document.getElementById('historyModal').style.display = 'flex';
+    loadingCtrl.hide();
+  }, 500);
 }
 
 function filterHistory() {
-  const subjectFilter = document.getElementById('filterSubject').value;
-  const statusFilter = document.getElementById('filterStatus').value;
-  const sortFilter = document.getElementById('filterSort').value;
-  const searchTerm = document.getElementById('searchTitle').value.toLowerCase();
-  let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
-  let filteredHistory = history.filter(test => {
-    const subjectMatch = subjectFilter === 'all' || test.subject === subjectFilter;
-    let statusMatch = true;
-    if (statusFilter === 'completed') {
-      statusMatch = test.status === 'completed';
-    } else if (statusFilter === 'pending') {
-      statusMatch = test.status === 'pending';
+  const buttonLoading = loading.button(event.target, 'Filtering...');
+  
+  setTimeout(() => {
+    const subjectFilter = document.getElementById('filterSubject').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    const sortFilter = document.getElementById('filterSort').value;
+    const searchTerm = document.getElementById('searchTitle').value.toLowerCase();
+    let history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+    let filteredHistory = history.filter(test => {
+      const subjectMatch = subjectFilter === 'all' || test.subject === subjectFilter;
+      let statusMatch = true;
+      if (statusFilter === 'completed') {
+        statusMatch = test.status === 'completed';
+      } else if (statusFilter === 'pending') {
+        statusMatch = test.status === 'pending';
+      }
+      const searchMatch = test.title.toLowerCase().includes(searchTerm) ||
+        (test.subject && test.subject.toLowerCase().includes(searchTerm));
+      return subjectMatch && statusMatch && searchMatch;
+    });
+    switch (sortFilter) {
+      case 'newest':
+        filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+        break;
+      case 'oldest':
+        filteredHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+        break;
+      case 'highest':
+        filteredHistory.sort((a, b) => {
+          const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : -1;
+          const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : -1;
+          return bScore - aScore;
+        });
+        break;
+      case 'lowest':
+        filteredHistory.sort((a, b) => {
+          const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : Infinity;
+          const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : Infinity;
+          return aScore - bScore;
+        });
+        break;
     }
-    const searchMatch = test.title.toLowerCase().includes(searchTerm) ||
-      (test.subject && test.subject.toLowerCase().includes(searchTerm));
-    return subjectMatch && statusMatch && searchMatch;
-  });
-  switch (sortFilter) {
-    case 'newest':
-      filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-      break;
-    case 'oldest':
-      filteredHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
-      break;
-    case 'highest':
-      filteredHistory.sort((a, b) => {
-        const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : -1;
-        const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : -1;
-        return bScore - aScore;
-      });
-      break;
-    case 'lowest':
-      filteredHistory.sort((a, b) => {
-        const aScore = a.score !== null && typeof a.score !== 'undefined' ? a.score : Infinity;
-        const bScore = b.score !== null && typeof b.score !== 'undefined' ? b.score : Infinity;
-        return aScore - bScore;
-      });
-      break;
-  }
-  displayHistory(filteredHistory);
+    displayHistory(filteredHistory);
+    buttonLoading.reset();
+  }, 600);
 }
 
 function displayHistory(history) {
@@ -1722,14 +2030,18 @@ function displayHistory(history) {
   }
 }
 
-// Remove confirmation modal (always on top, never auto-reopens history)
+// Remove confirmation modal
 function confirmRemoveHistory(title, subject) {
   closeHistoryModal();
   setTimeout(() => {
     showAreYouSureModal(
       `Are you sure you want to remove "${title}" (${subject}) from history? This cannot be undone.`,
       () => {
-        removeSinglePendingFromHistory(title, subject, true);
+        const loadingCtrl = loading.show('Removing test...');
+        setTimeout(() => {
+          removeSinglePendingFromHistory(title, subject, true);
+          loadingCtrl.hide();
+        }, 500);
       },
       () => {}
     );
@@ -1801,160 +2113,183 @@ function viewTestDetails(test) {
 }
 
 function resumePendingTest(date, isCorrectPhase = false) {
-  scrollToTop();
-  const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
-  const test = history.find(t => t.date === date && t.status === 'pending');
-  if (!test) {
-    showModal('Pending test not found.', () => {}, null);
-    return;
-  }
-  state.testTitle = test.title;
-  state.testSubject = test.subject;
-  state.currentQuestionSet = test.questionSet;
-  state.totalQuestions = test.total;
-  state.answers = test.answers || {};
-  state.correctAnswers = test.correctAnswers || {};
-  state.timeLeft = test.timeLeft || (test.total * 60);
-  state.phase = test.phase || "answering";
-  state.optionStyle = (test.extraState && test.extraState.optionStyle) || 'bengali';
-  state.optionCount = (test.extraState && test.extraState.optionCount) || 4;
-  state.testStarted = !isCorrectPhase;
-  localStorage.setItem('currentTestData', JSON.stringify({
-    answers: state.answers,
-    testState: { ...state }
-  }));
-  closeModal();
-  elements.homeScreen.style.display = 'none';
-  elements.setupForm.style.display = 'none';
-  elements.resultStats.style.display = 'none';
-  if (isCorrectPhase || state.phase === 'providing-correct') {
-    state.phase = 'providing-correct';
-    elements.questionContainer.innerHTML = '';
-    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
-    state.currentQuestionSet.forEach(qNum => {
-      const div = document.createElement('div');
-      div.className = 'question';
-      div.id = `q-${qNum}`;
-      div.innerHTML = `
-        <div class="question-number">Correct Answer for Question ${qNum}</div>
-        <div class="options-container">
-          ${optionLabels.map(opt =>
-            `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
-          ).join('')}
-        </div>
+  const loadingCtrl = loading.show('Loading test...');
+  
+  setTimeout(() => {
+    const history = JSON.parse(localStorage.getItem('omrHistory') || '[]');
+    const test = history.find(t => t.date === date && t.status === 'pending');
+    if (!test) {
+      loadingCtrl.hide();
+      showModal('Pending test not found.', () => {}, null);
+      return;
+    }
+    state.testTitle = test.title;
+    state.testSubject = test.subject;
+    state.currentQuestionSet = test.questionSet;
+    state.totalQuestions = test.total;
+    state.answers = test.answers || {};
+    state.correctAnswers = test.correctAnswers || {};
+    state.timeLeft = test.timeLeft || (test.total * 60);
+    state.phase = test.phase || "answering";
+    state.optionStyle = (test.extraState && test.extraState.optionStyle) || 'bengali';
+    state.optionCount = (test.extraState && test.extraState.optionCount) || 4;
+    state.testStarted = !isCorrectPhase;
+    localStorage.setItem('currentTestData', JSON.stringify({
+      answers: state.answers,
+      testState: { ...state }
+    }));
+    closeModal();
+    elements.homeScreen.style.display = 'none';
+    elements.setupForm.style.display = 'none';
+    elements.resultStats.style.display = 'none';
+    if (isCorrectPhase || state.phase === 'providing-correct') {
+      state.phase = 'providing-correct';
+      elements.questionContainer.innerHTML = '';
+      const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+      state.currentQuestionSet.forEach(qNum => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = `q-${qNum}`;
+        div.innerHTML = `
+          <div class="question-number">Correct Answer for Question ${qNum}</div>
+          <div class="options-container">
+            ${optionLabels.map(opt =>
+              `<button class="option-btn ${state.correctAnswers[qNum] === opt ? 'selected' : ''}" onclick="selectCorrect(${qNum}, '${opt}', this)">${opt}</button>`
+            ).join('')}
+          </div>
+        `;
+        elements.questionContainer.appendChild(div);
+      });
+      elements.testControls.style.display = 'flex';
+      elements.testControls.innerHTML = `
+        <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
+        <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
+        <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
       `;
-      elements.questionContainer.appendChild(div);
-    });
-    elements.testControls.style.display = 'flex';
-    elements.testControls.innerHTML = `
-      <button class="btn btn-success" onclick="checkAnswers()">Check Answers</button>
-      <button class="btn btn-warning" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-      <button class="btn btn-secondary" onclick="goBackToHome()">Cancel</button>
-    `;
-    elements.progressContainer.style.display = 'none';
-    elements.timer.style.display = 'none';
-  } else {
-    elements.timer.style.display = 'block';
-    elements.progressContainer.style.display = 'block';
-    elements.testControls.style.display = 'flex';
-    elements.questionContainer.innerHTML = '';
-    const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
-    state.currentQuestionSet.forEach(qNum => {
-      const div = document.createElement('div');
-      div.className = 'question';
-      div.id = `q-${qNum}`;
-      div.innerHTML = `
-        <div class="question-number">Question ${qNum}</div>
-        <div class="options-container">
-          ${optionLabels.map(opt =>
-            `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
-          ).join('')}
-        </div>
+      elements.progressContainer.style.display = 'none';
+      elements.timer.style.display = 'none';
+    } else {
+      elements.timer.style.display = 'block';
+      elements.progressContainer.style.display = 'block';
+      elements.testControls.style.display = 'flex';
+      elements.questionContainer.innerHTML = '';
+      const optionLabels = getOptionLabels(state.optionStyle, state.optionCount);
+      state.currentQuestionSet.forEach(qNum => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = `q-${qNum}`;
+        div.innerHTML = `
+          <div class="question-number">Question ${qNum}</div>
+          <div class="options-container">
+            ${optionLabels.map(opt =>
+              `<button class="option-btn ${state.answers[qNum] === opt ? 'selected' : ''}" onclick="selectAnswer(${qNum}, '${opt}', this)">${opt}</button>`
+            ).join('')}
+          </div>
+        `;
+        elements.questionContainer.appendChild(div);
+      });
+      elements.testControls.innerHTML = `
+        <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
+        <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
+        <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
       `;
-      elements.questionContainer.appendChild(div);
-    });
-    elements.testControls.innerHTML = `
-      <button class="btn btn-success" onclick="submitAnswers()">Submit Answers</button>
-      <button class="btn btn-danger" onclick="cancelTest()">Cancel Test</button>
-      <button class="btn btn-secondary" onclick="showAreYouSureModal('Are you sure you want to save for later?', saveForLater, continueTest)">Save for Later</button>
-    `;
-    updateProgress();
-    clearInterval(state.timer);
-    updateTimer();
-    state.timer = setInterval(updateTimer, 1000);
-  }
+      updateProgress();
+      clearInterval(state.timer);
+      updateTimer();
+      state.timer = setInterval(updateTimer, 1000);
+    }
+    loadingCtrl.hide();
+  }, 600);
 }
 
-// Modal functions (NO EVAL, robust callback storage)
+// Modal functions
 const modalCallbacks = { onConfirm: null, onCancel: null };
 
 function showModal(message, onConfirm, onCancel) {
-  const modal = document.getElementById('modal');
-  const content = document.getElementById('modalContent');
-  content.innerHTML = `<div>${message}</div>`;
-  const buttons = document.createElement('div');
-  buttons.className = 'modal-buttons';
+  const loadingCtrl = loading.show('', 100);
+  
+  setTimeout(() => {
+    loadingCtrl.hide();
+    const modal = document.getElementById('modal');
+    const content = document.getElementById('modalContent');
+    content.innerHTML = `<div>${message}</div>`;
+    const buttons = document.createElement('div');
+    buttons.className = 'modal-buttons';
 
-  modalCallbacks.onConfirm = onConfirm || null;
-  modalCallbacks.onCancel = onCancel || null;
+    modalCallbacks.onConfirm = onConfirm || null;
+    modalCallbacks.onCancel = onCancel || null;
 
-  // Only show OK if only "reminder"
-  if (!onConfirm && !onCancel) {
-    const okBtn = document.createElement('button');
-    okBtn.className = 'btn';
-    okBtn.textContent = 'OK';
-    okBtn.onclick = () => { closeModal(true); };
-    buttons.appendChild(okBtn);
-  } else if (onConfirm && onCancel) {
-    const yesBtn = document.createElement('button');
-    yesBtn.className = 'btn';
-    yesBtn.textContent = 'Yes';
-    yesBtn.onclick = () => { closeModal(true); };
-    const noBtn = document.createElement('button');
-    noBtn.className = 'btn btn-secondary';
-    noBtn.textContent = 'No';
-    noBtn.onclick = () => { closeModal(false); };
-    buttons.appendChild(yesBtn);
-    buttons.appendChild(noBtn);
-  } else if (onConfirm) {
-    const okBtn = document.createElement('button');
-    okBtn.className = 'btn';
-    okBtn.textContent = 'OK';
-    okBtn.onclick = () => { closeModal(true); };
-    buttons.appendChild(okBtn);
-  } else {
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'btn';
-    closeBtn.textContent = 'Close';
-    closeBtn.onclick = () => { closeModal(); };
-    buttons.appendChild(closeBtn);
-  }
-  content.appendChild(buttons);
-  modal.style.display = 'flex';
-  modal.style.zIndex = 99999;
+    if (!onConfirm && !onCancel) {
+      const okBtn = document.createElement('button');
+      okBtn.className = 'btn';
+      okBtn.textContent = 'OK';
+      okBtn.onclick = () => { closeModal(true); };
+      buttons.appendChild(okBtn);
+    } else if (onConfirm && onCancel) {
+      const yesBtn = document.createElement('button');
+      yesBtn.className = 'btn';
+      yesBtn.textContent = 'Yes';
+      yesBtn.onclick = () => { closeModal(true); };
+      const noBtn = document.createElement('button');
+      noBtn.className = 'btn btn-secondary';
+      noBtn.textContent = 'No';
+      noBtn.onclick = () => { closeModal(false); };
+      buttons.appendChild(yesBtn);
+      buttons.appendChild(noBtn);
+    } else if (onConfirm) {
+      const okBtn = document.createElement('button');
+      okBtn.className = 'btn';
+      okBtn.textContent = 'OK';
+      okBtn.onclick = () => { closeModal(true); };
+      buttons.appendChild(okBtn);
+    } else {
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'btn';
+      closeBtn.textContent = 'Close';
+      closeBtn.onclick = () => { closeModal(); };
+      buttons.appendChild(closeBtn);
+    }
+    content.appendChild(buttons);
+    modal.style.display = 'flex';
+    modal.style.zIndex = 99999;
+  }, 150);
 }
 
 function closeModal(confirmed) {
-  const modal = document.getElementById('modal');
-  modal.style.display = 'none';
-  if (confirmed === true && typeof modalCallbacks.onConfirm === 'function') {
-    modalCallbacks.onConfirm();
-  } else if (confirmed === false && typeof modalCallbacks.onCancel === 'function') {
-    modalCallbacks.onCancel();
-  }
+  const loadingCtrl = loading.show('', 100);
+  
+  setTimeout(() => {
+    loadingCtrl.hide();
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
+    if (confirmed === true && typeof modalCallbacks.onConfirm === 'function') {
+      modalCallbacks.onConfirm();
+    } else if (confirmed === false && typeof modalCallbacks.onCancel === 'function') {
+      modalCallbacks.onCancel();
+    }
+  }, 150);
 }
 
 function toggleTheme() {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  localStorage.setItem('darkMode', isDark);
-  if (document.getElementById('themeToggle')) {
-    document.getElementById('themeToggle').textContent = isDark ? '🌞' : '🌓';
-  }
+  const buttonLoading = loading.button(event.target, 'Switching theme...');
+  
+  setTimeout(() => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    if (document.getElementById('themeToggle')) {
+      document.getElementById('themeToggle').textContent = isDark ? '🌞' : '🌓';
+    }
+    buttonLoading.reset();
+  }, 400);
 }
 
 function showHelpModal() {
-  showModal(`
+  const loadingCtrl = loading.show('Loading help...');
+  
+  setTimeout(() => {
+    loadingCtrl.hide();
+    showModal(`
 <h1 style="font-size: 2.8em; font-weight: bold; margin-top: 40px;">How to Use Gravithon</h1>
 
 <ol>
@@ -2004,17 +2339,23 @@ function showHelpModal() {
 
 
 <p style="margin-top: 30px;"><em>Help Gravithon grow. Suggest features, report bugs, or send feedback via the app.</em></p>
-
-  `);
+    `);
+  }, 500);
 }
 
 function closeHistoryModal() {
-  const modal = document.getElementById('historyModal');
-  if (modal) modal.style.display = 'none';
+  const loadingCtrl = loading.show('', 100);
+  
+  setTimeout(() => {
+    loadingCtrl.hide();
+    const modal = document.getElementById('historyModal');
+    if (modal) modal.style.display = 'none';
+  }, 150);
 }
 
 document.addEventListener('DOMContentLoaded', init);
 
+// Global functions
 window.confirmRemoveHistory = confirmRemoveHistory;
 window.removeSinglePendingFromHistory = removeSinglePendingFromHistory;
 window.viewTestDetails = viewTestDetails;
@@ -2034,5 +2375,12 @@ window.closeHistoryModal = closeHistoryModal;
 window.toggleTheme = toggleTheme;
 window.showAreYouSureModal = showAreYouSureModal;
 </script>
+<!-- Global Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-content">
+    <span class="loading-spinner"></span>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+</div>
 </body>
 </html>
